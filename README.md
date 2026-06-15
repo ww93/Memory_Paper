@@ -6,167 +6,111 @@
 
 ```
 Memory_Paper/
-├── index.html              # 主索引页面（访问 username.github.io/Memory_Paper）
-├── papers/                 # 论文存储目录
-│   ├── msa/
-│   │   └── index.html      # MSA 论文详细解读
-│   ├── paper2/
-│   │   └── index.html      # 后续论文...
-│   └── ...
-└── README.md               # 本文件
+├── index.html                # 主索引页面（论文列表）
+├── README.md                 # 本文件
+├── .gitignore               # Git 忽略文件
+├── msa/                      # 论文预览页面目录
+│   └── index.html            # MSA 预览页（简介+主要成果）
+└── papers/                   # 论文完整内容目录
+    ├── msa/
+    │   └── index.html        # MSA 完整解读（详细图表+深度分析）
+    ├── paper-2-id/
+    │   └── index.html        # 后续论文...
+    └── ...
 ```
+
+## 🌐 访问体系
+
+| 位置 | URL | 说明 |
+|------|-----|------|
+| **主页** | `/Memory_Paper/` | 论文列表+快速导航 |
+| **预览页** | `/Memory_Paper/[paper-id]/` | 论文简介+主要成果（快速浏览）|
+| **完整解读** | `/Memory_Paper/papers/[paper-id]/` | 完整论文（详细图表+深度内容）|
+
+**示例**（MSA）：
+- 预览：`https://ww93.github.io/Memory_Paper/msa/`
+- 完整：`https://ww93.github.io/Memory_Paper/papers/msa/`
 
 ## 🚀 快速开始
 
 ### 查看论文
-- **主页**：访问 `https://[username].github.io/Memory_Paper`
-- **单篇论文**：访问 `https://[username].github.io/Memory_Paper/papers/[paper-id]/`
-  - 例如：`https://[username].github.io/Memory_Paper/papers/msa/`
+- **主页**：`https://ww93.github.io/Memory_Paper`
+- **论文预览**：`https://ww93.github.io/Memory_Paper/[paper-id]/`
+- **完整解读**：`https://ww93.github.io/Memory_Paper/papers/[paper-id]/`
 
 ### 添加新论文
 
-1. **创建新目录**
-   ```bash
-   mkdir papers/[new-paper-id]
-   ```
+#### 第 1 步：创建目录
+```bash
+mkdir -p papers/[paper-id]
+mkdir [paper-id]
+```
 
-2. **准备 HTML 文件**
-   - 将论文的 HTML 文件存为 `papers/[new-paper-id]/index.html`
-   - 确保 HTML 文件包含 `<!DOCTYPE html>` 和必要的 `<head>` 标签
+#### 第 2 步：创建完整解读页面
+在 `papers/[paper-id]/index.html` 放入完整的论文 HTML 文件。
 
-3. **更新主索引** `index.html`
-   - 在 `papers` 数组中添加新论文信息：
-   ```javascript
-   {
-     id: 'paper-id',
-     title: '论文标题',
-     subtitle: '副标题',
-     description: '论文简介...',
-     tags: ['标签1', '标签2'],
-     href: './papers/paper-id/'
-   }
-   ```
+#### 第 3 步：创建预览页面
+在 `[paper-id]/index.html` 创建预览页面，包含：
+- 论文标题和副标题
+- 简介说明
+- 关键创新点（bullet list）
+- 主要成果（表格或 highlights）
+- 一个链接到 `../papers/[paper-id]/` 的"查看完整论文"按钮
 
-4. **（可选）配置短链接** `404.html`
-   - 如果想支持 `https://[username].github.io/Memory_Paper/[paper-id]/` 短链接
-   - 编辑 `404.html` 中的 `paperRoutes` 映射：
-   ```javascript
-   const paperRoutes = {
-     'msa': '/papers/msa/',
-     'paper-id': '/papers/paper-id/',  // ← 添加这一行
-     // 更多论文...
-   };
-   ```
+**参考** `msa/index.html` **的结构**
 
-5. **提交并推送**
-   ```bash
-   git add papers/[new-paper-id]/index.html index.html 404.html
-   git commit -m "Add: 新论文解读"
-   git push origin main
-   ```
+#### 第 4 步：更新主索引
+编辑 `index.html`，在 `papers` 数组中添加：
+```javascript
+{
+  id: 'bert',
+  title: 'BERT',
+  subtitle: '...',
+  description: '...',
+  tags: ['标签1', '标签2'],
+  href: './bert/'
+}
+```
 
-6. **等待发布**
-   - GitHub Pages 会自动更新（通常 1-2 分钟）
-   - 新论文即可通过链接访问
+> 注意：`href` 指向**预览页面** `./bert/`
+
+#### 第 5 步：提交
+```bash
+git add papers/[paper-id]/ [paper-id]/ index.html
+git commit -m "Add: 新论文解读"
+git push origin main
+```
+
+## 🔄 二层结构设计
+
+### 预览页面 (`/[paper-id]/`)
+- **内容**：论文简介、关键创新、主要成果
+- **用途**：快速了解论文核心内容
+- **加载速度**：快
+
+### 完整解读 (`/papers/[paper-id]/`)
+- **内容**：详细图表、交互演示、公式推导、实验分析
+- **用途**：深度学习和研究参考
+
+### 用户访问流程
+1. 主页列表 → 点击论文卡片 → 预览页面
+2. 预览页面 → 点击"查看完整论文" → 完整解读
 
 ## ⚙️ GitHub Pages 配置
 
-### 仓库设置
-该仓库已配置好 GitHub Pages，**无需额外设置**。只需确保：
+该仓库已配置好 GitHub Pages，**无需额外设置**。
 
-1. **仓库是公开的**（Public）
-2. **仓库名为** `Memory_Paper`
-3. **已启用 GitHub Pages**：
-   - 进入仓库 → Settings → Pages
-   - Source 设置为 "Deploy from a branch"
-   - Branch 选择 `main` 和 `/ (root)`
-   - 点击 Save
-
-### 访问地址
-- 主索引：`https://[username].github.io/Memory_Paper/`
-- 论文页面：`https://[username].github.io/Memory_Paper/papers/[paper-id]/`
-
-> 如果仓库名不同，则需更新链接中的路径。
-
-## � 短链接与路由机制
-
-该仓库使用 `404.html` 实现**智能路由分发**，支持简洁的短链接：
-
-| 访问方式 | 实际跳转位置 |
-|---------|-----------|
-| `/Memory_Paper/papers/msa/` | ✅ 规范链接（直接访问）|
-| `/Memory_Paper/msa/` | ✅ 短链接（通过 404.html 路由）|
-
-**工作原理**：
-- 用户访问 `/Memory_Paper/[paper-id]/` 时，GitHub Pages 找不到该路径
-- 触发 `404.html`，其中的 JavaScript 解析 URL
-- 检查 `paperRoutes` 映射表，自动跳转到 `papers/[paper-id]/`
-- 支持 loading 动画和错误处理
-
-**添加新论文的短链接**：
-在 `404.html` 中修改 `paperRoutes` 对象：
-```javascript
-const paperRoutes = {
-  'msa': '/papers/msa/',
-  'bert': '/papers/bert/',
-  // 新论文
-  'llama': '/papers/llama/',
-};
-```
-
-> 💡 **优点**：
-> - 无需为每篇论文创建重定向文件
-> - 所有短链接由一个文件统一管理
-> - 添加新论文只需改一行代码
-> - 可复用性强，易于扩展
-
-## �📝 论文页面规范
-
-为确保论文能正常展示，每个 `papers/[paper-id]/index.html` 需要包括：
-
-- ✅ 完整的 HTML 文档结构（DOCTYPE、html、head、body 标签）
-- ✅ 适当的字符编码声明（`<meta charset="utf-8">`）
-- ✅ 视口设置（`<meta name="viewport">`）
-- ✅ 自包含的样式和脚本（避免外部依赖本地路径）
-- ✅ 使用 CDN 资源（如 MathJax、图表库等）
-
-示例 head 标签：
-```html
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>论文标题</title>
-  <style>/* 内联样式或链接 CDN */</style>
-  <script src="https://cdn.jsdelivr.net/..."></script>
-</head>
-```
-
-## 🔗 相对路径处理
-
-- ✅ 各论文页面完全独立，相对路径只需在 `papers/[id]/` 内部考虑
-- ✅ 返回主页可用：`<a href="../../">返回主页</a>`
-- ✅ 外部资源使用绝对 CDN URL（如 MathJax、Bootstrap 等）
-- ⚠️ 避免绝对路径或相对于根目录的引用
+- 主索引：`https://ww93.github.io/Memory_Paper/`
+- 预览页面：`https://ww93.github.io/Memory_Paper/[paper-id]/`
+- 完整解读：`https://ww93.github.io/Memory_Paper/papers/[paper-id]/`
 
 ## 📊 当前收录
 
-| 论文 | 主题 | 标签 |
-|------|------|------|
-| MSA | Memory Sparse Attention | RAG, 长上下文, 记忆系统 |
-
-## 💡 后续扩展
-
-- [ ] 为每篇论文添加元数据（作者、出版年份、论文链接）
-- [ ] 支持论文全文搜索
-- [ ] 添加论文评分和讨论区
-- [ ] 集成 GitHub Issues 作为论文讨论平台
-
-## 📖 参考资源
-
-- [GitHub Pages 文档](https://docs.github.com/en/pages)
-- [GitHub Pages 故障排除](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/troubleshooting-jekyll-build-errors-for-github-pages)
+| 论文 | 预览 | 完整解读 |
+|------|------|---------|
+| MSA | `/msa/` | `/papers/msa/` |
 
 ---
 
-**维护者**：[Your Name]  
+**维护者**：ww93  
 **最后更新**：2026-06-15
