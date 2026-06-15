@@ -34,8 +34,7 @@ Memory_Paper/
    - 将论文的 HTML 文件存为 `papers/[new-paper-id]/index.html`
    - 确保 HTML 文件包含 `<!DOCTYPE html>` 和必要的 `<head>` 标签
 
-3. **更新主索引**
-   - 打开 `index.html`
+3. **更新主索引** `index.html`
    - 在 `papers` 数组中添加新论文信息：
    ```javascript
    {
@@ -48,14 +47,25 @@ Memory_Paper/
    }
    ```
 
-4. **提交并推送**
+4. **（可选）配置短链接** `404.html`
+   - 如果想支持 `https://[username].github.io/Memory_Paper/[paper-id]/` 短链接
+   - 编辑 `404.html` 中的 `paperRoutes` 映射：
+   ```javascript
+   const paperRoutes = {
+     'msa': '/papers/msa/',
+     'paper-id': '/papers/paper-id/',  // ← 添加这一行
+     // 更多论文...
+   };
+   ```
+
+5. **提交并推送**
    ```bash
-   git add papers/[new-paper-id]/index.html index.html
+   git add papers/[new-paper-id]/index.html index.html 404.html
    git commit -m "Add: 新论文解读"
    git push origin main
    ```
 
-5. **等待发布**
+6. **等待发布**
    - GitHub Pages 会自动更新（通常 1-2 分钟）
    - 新论文即可通过链接访问
 
@@ -78,7 +88,39 @@ Memory_Paper/
 
 > 如果仓库名不同，则需更新链接中的路径。
 
-## 📝 论文页面规范
+## � 短链接与路由机制
+
+该仓库使用 `404.html` 实现**智能路由分发**，支持简洁的短链接：
+
+| 访问方式 | 实际跳转位置 |
+|---------|-----------|
+| `/Memory_Paper/papers/msa/` | ✅ 规范链接（直接访问）|
+| `/Memory_Paper/msa/` | ✅ 短链接（通过 404.html 路由）|
+
+**工作原理**：
+- 用户访问 `/Memory_Paper/[paper-id]/` 时，GitHub Pages 找不到该路径
+- 触发 `404.html`，其中的 JavaScript 解析 URL
+- 检查 `paperRoutes` 映射表，自动跳转到 `papers/[paper-id]/`
+- 支持 loading 动画和错误处理
+
+**添加新论文的短链接**：
+在 `404.html` 中修改 `paperRoutes` 对象：
+```javascript
+const paperRoutes = {
+  'msa': '/papers/msa/',
+  'bert': '/papers/bert/',
+  // 新论文
+  'llama': '/papers/llama/',
+};
+```
+
+> 💡 **优点**：
+> - 无需为每篇论文创建重定向文件
+> - 所有短链接由一个文件统一管理
+> - 添加新论文只需改一行代码
+> - 可复用性强，易于扩展
+
+## �📝 论文页面规范
 
 为确保论文能正常展示，每个 `papers/[paper-id]/index.html` 需要包括：
 
