@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>UMem 交互式论文解读：Unified Memory Extraction and Management</title>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root { --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#667085; --line:#d7dde8; --brand:#0f766e; --brand2:#7c3aed; --warn:#b45309; --ok:#15803d; --shadow:0 12px 30px rgba(31,41,55,.08); --radius:18px; }
+*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#e8fff8 0,transparent 32rem),var(--bg);color:var(--text);line-height:1.72} a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.wrapper{max-width:1180px;margin:0 auto;padding:28px 18px 80px}.hero{background:linear-gradient(135deg,#0f172a,#0f766e 52%,#6d28d9);color:#fff;border-radius:28px;padding:38px 34px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;border-radius:50%;right:-180px;top:-210px;background:rgba(255,255,255,.12)}.hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;letter-spacing:0}.hero p{max-width:960px;margin:12px 0 0;font-size:1.07rem;opacity:.95}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.badge{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);font-size:.92rem}.section{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}.section h2{margin:0 0 12px;font-size:1.65rem;letter-spacing:0}.section h3{margin:26px 0 10px;font-size:1.23rem}.section h4{margin:18px 0 8px;font-size:1.05rem}.lead{font-size:1.04rem;color:#344054}.small{color:var(--muted);font-size:.92rem}.callout{border-left:5px solid var(--brand);background:#ecfdf5;padding:15px 18px;border-radius:12px;margin:16px 0}.callout.warn{border-left-color:var(--warn);background:#fffbeb}.callout.ok{border-left-color:var(--ok);background:#f0fdf4}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:860px){.grid.two,.grid.three{grid-template-columns:1fr}}.card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}.card h4{margin-top:0}.kpi{font-size:1.45rem;font-weight:800;color:var(--brand);margin-bottom:4px}.table-wrap{overflow-x:auto;margin-top:14px;border-radius:14px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;background:#fff;min-width:760px}th,td{border-bottom:1px solid #edf0f5;padding:11px 12px;vertical-align:top;text-align:left}th{background:#f3f6fb;font-weight:700;color:#111827}tr:last-child td{border-bottom:none}.figure-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}@media(max-width:980px){.figure-grid{grid-template-columns:1fr}}.diagram{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px;display:grid;gap:12px}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:stretch}@media(max-width:980px){.flow{grid-template-columns:1fr}}.node{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;min-height:126px;text-align:left;cursor:pointer;color:var(--text);font:inherit}.node:hover,.node.active{border-color:var(--brand);background:#ecfdf5}.node b{display:block;color:var(--brand2);margin-bottom:5px}.node span{color:var(--muted);font-size:.92rem}.info-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);padding:18px;min-height:330px;position:sticky;top:12px}.info-panel h3{margin-top:0;color:var(--brand)}.pipeline{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.step{flex:1 1 180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;position:relative}.step b{color:var(--brand2)}.step:after{content:"→";position:absolute;right:-13px;top:40%;color:#94a3b8;font-weight:800}.step:last-child:after{display:none}@media(max-width:700px){.step:after{display:none}}.logic-box{border-left:4px solid var(--brand2);background:#f5f3ff;padding:12px 14px;border-radius:12px;margin:12px 0}code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}.footer{margin-top:28px;color:var(--muted);text-align:center;font-size:.92rem}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <section class="hero">
+    <h1>UMem 交互式论文解读</h1>
+    <p><b>UMEM: Unified Memory Extraction and Management Framework for Generalizable Memory</b> 关心的不是“记忆库怎么检索”，而是“从经验里抽取什么记忆、又如何管理这些记忆”必须被联合优化。论文把记忆优化器本身作为可训练策略，用 Semantic Neighborhood Modeling 避免抽到只对单个样本有用的噪声。</p>
+    <div class="badges"><span class="badge">Joint Extraction + Management</span><span class="badge">Semantic Neighborhood</span><span class="badge">GRPO</span><span class="badge">Self-Evolving Agent</span><span class="badge">Generalizable Memory</span></div>
+  </section>
+
+  <section class="section" id="overview">
+    <h2>1. 核心判断</h2>
+    <p class="lead">UMem 把长期记忆看作 agent 的“可演化参数”：冻结 executor 做任务，memory optimizer 从执行轨迹中抽取 insight 并更新 memory bank。它的重点是让记忆从实例经验中泛化，而不是把每条轨迹里的细节都塞进库里。</p>
+    <div class="callout"><b>一句话概括：</b>UMem 不是只训练“怎么增删改查记忆”，而是同时训练“什么才值得被抽成记忆”和“这些记忆如何并入库”。这让 extraction 和 management 不再错位。</div>
+    <div class="grid three">
+      <div class="card"><div class="kpi">5</div><h4>评测任务</h4><p>AIME、GPQA Diamond、HLE、HotpotQA、ALFWorld。</p></div>
+      <div class="card"><div class="kpi">10.67%</div><h4>交互任务提升</h4><p>摘要报告在多轮交互任务上最高提升 10.67%。</p></div>
+      <div class="card"><div class="kpi">N=3</div><h4>邻域大小</h4><p>消融显示语义邻域大小 3 在任务特异性与迁移之间取得更好平衡。</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="mechanism">
+    <h2>2. 机制图交互：把经验变成可泛化记忆</h2>
+    <div class="figure-grid">
+      <div class="diagram">
+        <div class="flow">
+          <button class="node active" data-key="executor"><b>1. Frozen Executor</b><span>带着已有记忆完成任务并产生轨迹。</span></button>
+          <button class="node" data-key="extract"><b>2. Memory Extraction</b><span>从轨迹中蒸馏出候选 insight。</span></button>
+          <button class="node" data-key="neighbor"><b>3. Semantic Neighborhood</b><span>按语义近邻评估记忆是否跨样本有用。</span></button>
+          <button class="node" data-key="manage"><b>4. Management</b><span>把候选记忆合并、更新或丢弃。</span></button>
+          <button class="node" data-key="reward"><b>5. GRPO Reward</b><span>用邻域级边际效用训练策略。</span></button>
+        </div>
+        <div class="logic-box">UMem 的核心防线是：一条记忆不能只对当前样本有帮助，它还要能提高语义邻域内相关查询的表现。</div>
+      </div>
+      <aside class="info-panel">
+        <h3 id="infoTitle">1. Frozen Executor</h3>
+        <p id="infoBody">executor 是执行任务的冻结模型。UMem 不直接改它的主参数，而是通过记忆优化器改进后续任务可用的 memory bank。</p>
+        <p class="small">悬停或点击左侧模块查看解释。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" id="training">
+    <h2>3. 训练目标：从样本收益到邻域收益</h2>
+    <div class="pipeline">
+      <div class="step"><b>Forward Pass</b><p>executor 使用检索到的 memories 完成任务。</p></div>
+      <div class="step"><b>Trajectory</b><p>轨迹成为 extraction 和 management 的输入材料。</p></div>
+      <div class="step"><b>Marginal Utility</b><p>比较记忆更新前后在语义邻域里的收益。</p></div>
+      <div class="step"><b>Policy Update</b><p>通过 GRPO 优化记忆优化器。</p></div>
+    </div>
+    <div class="callout ok"><b>消融要点：</b>论文指出，去掉 Semantic Neighborhood Modeling 会导致明显性能下降；只优化 management 而不优化 extraction，也会让总体表现下滑。</div>
+  </section>
+
+  <section class="section" id="results">
+    <h2>4. 实验结果：泛化比记得多更重要</h2>
+    <div class="table-wrap"><table><thead><tr><th>观察</th><th>论文依据</th><th>解读</th></tr></thead><tbody>
+      <tr><td>复杂推理和交互任务都有收益</td><td>Table 1 覆盖 AIME、GPQA Diamond、HLE、HotpotQA、ALFWorld。</td><td>UMem 不是单一 QA 记忆库，而是面向 self-evolving agent 的通用记忆优化器。</td></tr>
+      <tr><td>强 executor 提供更高质量轨迹</td><td>论文分析 GPT-5.1、Gemini-2.5-Flash 等强 executor 会带来更明显收益。</td><td>记忆优化器依赖执行轨迹质量；轨迹越好，抽出的 insight 越可能有用。</td></tr>
+      <tr><td>持续演化曲线单调增长</td><td>摘要称 UMEM maintains a monotonic growth curve during continuous evolution。</td><td>这是 self-evolving memory 的关键指标：越用越好，而不是越记越脏。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="section" id="limits">
+    <h2>5. 边界与工程启发</h2>
+    <div class="grid two">
+      <div class="card"><h4>适合的场景</h4><p>需要从交互轨迹中沉淀可复用策略、偏好、解题经验的 agent，而不是只保存用户事实。</p></div>
+      <div class="card"><h4>需要补的系统层</h4><p>论文聚焦记忆优化器训练；生产系统还要补权限、审计、可解释、删除和用户可控的外部壳。</p></div>
+    </div>
+    <div class="callout warn"><b>谨慎点：</b>论文 PDF 写明代码和模型将公开发布；在未确认正式仓库前，不应把它当作已经可直接部署的工程包。</div>
+  </section>
+
+  <section class="section" id="sources">
+    <h2>6. 来源</h2>
+    <p>论文：<a href="https://arxiv.org/abs/2602.10652">arXiv:2602.10652</a>。</p>
+  </section>
+  <div class="footer">本页面依据 UMem 论文整理；实验数字取自论文摘要、Table 1 与 Table 2 文字说明。</div>
+</div>
+<script>
+const info = {
+  executor:['1. Frozen Executor','executor 是执行任务的冻结模型。UMem 不直接改它的主参数，而是通过记忆优化器改进后续任务可用的 memory bank。'],
+  extract:['2. Memory Extraction','extraction 负责从经验轨迹中抽取可复用 insight。论文认为只用静态 prompt 抽取会累积 instance-specific noise。'],
+  neighbor:['3. Semantic Neighborhood','Semantic Neighborhood Modeling 用一簇语义相关查询评估记忆效用，避免记忆只服务当前样本。'],
+  manage:['4. Management','management 负责把候选记忆整合进 memory bank，包括保留、更新、合并或丢弃。'],
+  reward:['5. GRPO Reward','训练信号是邻域级 marginal utility reward，而不是单个样本上的即时收益。']
+};
+document.querySelectorAll('.node').forEach(node=>{node.addEventListener('mouseenter',()=>setInfo(node.dataset.key));node.addEventListener('click',()=>setInfo(node.dataset.key));});
+function setInfo(key){document.getElementById('infoTitle').textContent=info[key][0];document.getElementById('infoBody').textContent=info[key][1];document.querySelectorAll('.node').forEach(node=>node.classList.toggle('active',node.dataset.key===key));}
+</script>
+</body>
+</html>

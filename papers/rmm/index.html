@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RMM 交互式论文解读：Reflective Memory Management</title>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--line:#d7dde8;--brand:#0f766e;--brand2:#1d4ed8;--warn:#b45309;--ok:#15803d;--shadow:0 12px 30px rgba(31,41,55,.08);--radius:18px}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#e8fff8 0,transparent 32rem),var(--bg);color:var(--text);line-height:1.72}a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.wrapper{max-width:1180px;margin:0 auto;padding:28px 18px 80px}.hero{background:linear-gradient(135deg,#111827,#0f766e 52%,#1d4ed8);color:#fff;border-radius:28px;padding:38px 34px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;border-radius:50%;right:-180px;top:-210px;background:rgba(255,255,255,.12)}.hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;letter-spacing:0}.hero p{max-width:960px;margin:12px 0 0;font-size:1.07rem;opacity:.95}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.badge{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);font-size:.92rem}.section{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}.section h2{margin:0 0 12px;font-size:1.65rem;letter-spacing:0}.section h3{margin:26px 0 10px;font-size:1.23rem}.section h4{margin:18px 0 8px;font-size:1.05rem}.lead{font-size:1.04rem;color:#344054}.small{color:var(--muted);font-size:.92rem}.callout{border-left:5px solid var(--brand);background:#ecfdf5;padding:15px 18px;border-radius:12px;margin:16px 0}.callout.warn{border-left-color:var(--warn);background:#fffbeb}.callout.ok{border-left-color:var(--ok);background:#f0fdf4}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:860px){.grid.two,.grid.three{grid-template-columns:1fr}}.card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}.card h4{margin-top:0}.kpi{font-size:1.45rem;font-weight:800;color:var(--brand);margin-bottom:4px}.table-wrap{overflow-x:auto;margin-top:14px;border-radius:14px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;background:#fff;min-width:760px}th,td{border-bottom:1px solid #edf0f5;padding:11px 12px;vertical-align:top;text-align:left}th{background:#f3f6fb;font-weight:700;color:#111827}tr:last-child td{border-bottom:none}.figure-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}@media(max-width:980px){.figure-grid{grid-template-columns:1fr}}.diagram{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px;display:grid;gap:12px}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:stretch}@media(max-width:980px){.flow{grid-template-columns:1fr}}.node{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;min-height:126px;text-align:left;cursor:pointer;color:var(--text);font:inherit}.node:hover,.node.active{border-color:var(--brand);background:#ecfdf5}.node b{display:block;color:var(--brand2);margin-bottom:5px}.node span{color:var(--muted);font-size:.92rem}.info-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);padding:18px;min-height:330px;position:sticky;top:12px}.info-panel h3{margin-top:0;color:var(--brand)}.pipeline{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.step{flex:1 1 180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;position:relative}.step b{color:var(--brand2)}.step:after{content:"→";position:absolute;right:-13px;top:40%;color:#94a3b8;font-weight:800}.step:last-child:after{display:none}@media(max-width:700px){.step:after{display:none}}.logic-box{border-left:4px solid var(--brand2);background:#eff6ff;padding:12px 14px;border-radius:12px;margin:12px 0}code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}.footer{margin-top:28px;color:var(--muted);text-align:center;font-size:.92rem}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <section class="hero">
+    <h1>RMM 交互式论文解读</h1>
+    <p><b>In Prospect and Retrospect: Reflective Memory Management for Long-term Personalized Dialogue Agents</b> 面向长期个性化对话。它认为固定粒度记忆和固定检索都不够：一方面需要面向未来组织记忆，另一方面需要根据当前回答中的引用证据在线调整检索。</p>
+    <div class="badges"><span class="badge">Prospective Reflection</span><span class="badge">Retrospective Reflection</span><span class="badge">Citation-based Reward</span><span class="badge">MSC</span><span class="badge">LongMemEval</span></div>
+  </section>
+
+  <section class="section" id="overview">
+    <h2>1. 核心判断</h2>
+    <p class="lead">RMM 是一个很适合“陪伴场景”讨论的记忆系统论文：它不只关心记忆是否存在，还关心记忆的粒度、组织方式、检索适配和对话生成中的证据引用。它把“未来会怎么用”与“刚才用了什么”一起纳入记忆管理。</p>
+    <div class="callout"><b>一句话概括：</b>RMM 用 Prospective Reflection 生成面向未来检索的多粒度记忆，再用 Retrospective Reflection 根据 LLM 回答引用的证据，以在线 RL 风格持续修正 retrieval/reranking。</div>
+    <div class="grid three">
+      <div class="card"><div class="kpi">+10%</div><h4>LongMemEval</h4><p>摘要称相较无记忆管理基线有超过 10% accuracy improvement。</p></div>
+      <div class="card"><div class="kpi">33.4</div><h4>MSC METEOR</h4><p>Table 1 中 RMM + GTE 达到 33.4% METEOR。</p></div>
+      <div class="card"><div class="kpi">70.4</div><h4>LongMemEval Acc.</h4><p>Table 1 中 RMM + GTE 达到 70.4% Accuracy。</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="mechanism">
+    <h2>2. 机制图交互：前瞻与回顾</h2>
+    <div class="figure-grid">
+      <div class="diagram">
+        <div class="flow">
+          <button class="node active" data-key="history"><b>1. Full History</b><span>长期对话历史包含跨天、跨周甚至更久的信息。</span></button>
+          <button class="node" data-key="prospective"><b>2. Prospective</b><span>按 utterance、turn、session 多粒度总结。</span></button>
+          <button class="node" data-key="retrieve"><b>3. Retrieve</b><span>当前 query 从个性化 memory bank 中召回。</span></button>
+          <button class="node" data-key="retrospective"><b>4. Retrospective</b><span>根据回答引用的证据判断哪些记忆有用。</span></button>
+          <button class="node" data-key="rerank"><b>5. Reranker Update</b><span>用 citation score 调整后续检索排序。</span></button>
+        </div>
+        <div class="logic-box">RMM 的反思不是事后写总结而已：Retrospective Reflection 把“这次回答真正引用了哪些记忆”转成检索优化信号。</div>
+      </div>
+      <aside class="info-panel">
+        <h3 id="infoTitle">1. Full History</h3>
+        <p id="infoBody">长期陪伴对话里，重要信息可能出现在昨天、上周或更早的会话。RMM 的目标是让这些历史能被正确组织和召回。</p>
+        <p class="small">悬停或点击左侧模块查看解释。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" id="results">
+    <h2>3. 实验结果：结构化记忆 + 自适应检索</h2>
+    <div class="table-wrap"><table><thead><tr><th>方法</th><th>MSC METEOR / BERT</th><th>LongMemEval Recall@5 / Acc.</th><th>说明</th></tr></thead><tbody>
+      <tr><td>RAG + GTE</td><td>27.5 / 52.1</td><td>62.4 / 63.6</td><td>强 retriever 的普通 RAG 已经有效，但仍受固定检索限制。</td></tr>
+      <tr><td>RMM + Contriever</td><td>30.8 / 55.4</td><td>60.4 / 61.2</td><td>即使用较弱 retriever，也能靠反思机制提升。</td></tr>
+      <tr><td>RMM + GTE</td><td>33.4 / 57.1</td><td>69.8 / 70.4</td><td>Table 1 中整体最佳。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="section" id="ablation">
+    <h2>4. 消融：两个反思组件都重要</h2>
+    <div class="pipeline">
+      <div class="step"><b>RAG</b><p>Contriever 下 MSC METEOR 为 24.8，LongMemEval Acc. 为 58.8。</p></div>
+      <div class="step"><b>+ PR</b><p>Prospective Reflection 提升到 28.6 / 59.6。</p></div>
+      <div class="step"><b>+ RR</b><p>Retrospective Reflection 需要 reranker 配合，否则直接 fine-tune retriever 会失稳。</p></div>
+      <div class="step"><b>RMM</b><p>完整系统达到 30.8 / 61.2。</p></div>
+    </div>
+    <div class="callout ok"><b>证据质量：</b>Table 3 显示 citation-based scoring 在 LongMemEval 上识别 useful memory 的 F1 为 90.2%，overall F1 为 86.7%。</div>
+  </section>
+
+  <section class="section" id="limits">
+    <h2>5. 边界与工程启发</h2>
+    <div class="grid two">
+      <div class="card"><h4>适合陪伴场景</h4><p>RMM 处理的是长期个性化对话，比纯长文档 QA 更接近家庭陪伴中的跨会话连续性。</p></div>
+      <div class="card"><h4>仍需治理壳</h4><p>它优化记忆组织和检索，但用户可见编辑、授权、删除和敏感信息边界仍需系统层实现。</p></div>
+    </div>
+    <div class="callout warn"><b>谨慎点：</b>RMM 使用 LLM-generated citations 作为 reward 信号；真实产品中还要评估引用证据是否会泄露敏感历史。</div>
+  </section>
+
+  <section class="section" id="sources">
+    <h2>6. 来源</h2>
+    <p>正式论文：<a href="https://aclanthology.org/2025.acl-long.413/">ACL Anthology 2025.acl-long.413</a>；预印本：<a href="https://arxiv.org/abs/2503.08026">arXiv:2503.08026</a>。</p>
+  </section>
+  <div class="footer">本页面依据 RMM ACL 论文与 arXiv 版本整理；实验数字取自论文摘要、Table 1、Table 2 与 Table 3。</div>
+</div>
+<script>
+const info={history:['1. Full History','长期陪伴对话里，重要信息可能出现在昨天、上周或更早的会话。RMM 的目标是让这些历史能被正确组织和召回。'],prospective:['2. Prospective Reflection','Prospective Reflection 把历史按 utterance、turn、session 等粒度总结进 personalized memory bank。'],retrieve:['3. Retrieve','当前 query 会从 memory bank 中召回相关历史，而不是把所有历史塞进上下文。'],retrospective:['4. Retrospective Reflection','Retrospective Reflection 检查 LLM 回答引用了哪些证据，用引用结果评价检索质量。'],rerank:['5. Reranker Update','RMM 用 citation-based reward 调整 reranker，使未来检索更贴合对话上下文。']};
+document.querySelectorAll('.node').forEach(node=>{node.addEventListener('mouseenter',()=>setInfo(node.dataset.key));node.addEventListener('click',()=>setInfo(node.dataset.key));});
+function setInfo(key){document.getElementById('infoTitle').textContent=info[key][0];document.getElementById('infoBody').textContent=info[key][1];document.querySelectorAll('.node').forEach(node=>node.classList.toggle('active',node.dataset.key===key));}
+</script>
+</body>
+</html>

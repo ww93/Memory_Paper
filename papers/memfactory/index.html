@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MemFactory 交互式论文解读：Unified Memory-RL Framework</title>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--line:#d7dde8;--brand:#7c3aed;--brand2:#0f766e;--warn:#b45309;--ok:#15803d;--shadow:0 12px 30px rgba(31,41,55,.08);--radius:18px}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#f0e8ff 0,transparent 32rem),var(--bg);color:var(--text);line-height:1.72}a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.wrapper{max-width:1180px;margin:0 auto;padding:28px 18px 80px}.hero{background:linear-gradient(135deg,#111827,#6d28d9 52%,#0f766e);color:#fff;border-radius:28px;padding:38px 34px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;border-radius:50%;right:-180px;top:-210px;background:rgba(255,255,255,.12)}.hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;letter-spacing:0}.hero p{max-width:960px;margin:12px 0 0;font-size:1.07rem;opacity:.95}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.badge{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);font-size:.92rem}.section{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}.section h2{margin:0 0 12px;font-size:1.65rem;letter-spacing:0}.section h3{margin:26px 0 10px;font-size:1.23rem}.section h4{margin:18px 0 8px;font-size:1.05rem}.lead{font-size:1.04rem;color:#344054}.small{color:var(--muted);font-size:.92rem}.callout{border-left:5px solid var(--brand);background:#f5f3ff;padding:15px 18px;border-radius:12px;margin:16px 0}.callout.warn{border-left-color:var(--warn);background:#fffbeb}.callout.ok{border-left-color:var(--ok);background:#f0fdf4}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:860px){.grid.two,.grid.three{grid-template-columns:1fr}}.card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}.card h4{margin-top:0}.kpi{font-size:1.45rem;font-weight:800;color:var(--brand);margin-bottom:4px}.table-wrap{overflow-x:auto;margin-top:14px;border-radius:14px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;background:#fff;min-width:760px}th,td{border-bottom:1px solid #edf0f5;padding:11px 12px;vertical-align:top;text-align:left}th{background:#f3f6fb;font-weight:700;color:#111827}tr:last-child td{border-bottom:none}.figure-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}@media(max-width:980px){.figure-grid{grid-template-columns:1fr}}.diagram{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px;display:grid;gap:12px}.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}@media(max-width:980px){.flow{grid-template-columns:1fr}}.node{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;min-height:126px;text-align:left;cursor:pointer;color:var(--text);font:inherit}.node:hover,.node.active{border-color:var(--brand);background:#f5f3ff}.node b{display:block;color:var(--brand2);margin-bottom:5px}.node span{color:var(--muted);font-size:.92rem}.info-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);padding:18px;min-height:330px;position:sticky;top:12px}.info-panel h3{margin-top:0;color:var(--brand)}.pipeline{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.step{flex:1 1 180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;position:relative}.step b{color:var(--brand2)}.step:after{content:"→";position:absolute;right:-13px;top:40%;color:#94a3b8;font-weight:800}.step:last-child:after{display:none}@media(max-width:700px){.step:after{display:none}}.logic-box{border-left:4px solid var(--brand2);background:#f0fdfa;padding:12px 14px;border-radius:12px;margin:12px 0}code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}.footer{margin-top:28px;color:var(--muted);text-align:center;font-size:.92rem}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <section class="hero">
+    <h1>MemFactory 交互式论文解读</h1>
+    <p><b>MemFactory: Unified Inference &amp; Training Framework for Agent Memory</b> 不是提出一个新的记忆算法，而是把 Memory-RL 研究里的 extraction、update、retrieval、agent、environment、trainer 统一成可插拔框架。它更像 LLaMA-Factory 之于 fine-tuning：降低搭建和比较记忆代理的工程门槛。</p>
+    <div class="badges"><span class="badge">Unified Framework</span><span class="badge">Module / Agent / Environment / Trainer</span><span class="badge">GRPO</span><span class="badge">Memory-R1 / RMM / MemAgent</span><span class="badge">Single A800 Experiment</span></div>
+  </section>
+
+  <section class="section" id="overview">
+    <h2>1. 核心判断</h2>
+    <p class="lead">MemFactory 的价值在基础设施层：当 Memory-R1、RMM、MemAgent 这类方法都需要训练记忆策略时，研究者需要统一的模块接口、环境奖励、rollout 和评测管线，而不是为每篇论文重写一套实验系统。</p>
+    <div class="callout"><b>一句话概括：</b>MemFactory 把 memory lifecycle 拆成 Lego-like 组件，让 extraction / update / retrieval / agent policy 能在同一训练和推理框架里组合、替换和评测。</div>
+    <div class="grid three">
+      <div class="card"><div class="kpi">4</div><h4>核心层</h4><p>Module、Agent、Environment、Trainer。</p></div>
+      <div class="card"><div class="kpi">14.8%</div><h4>相对提升</h4><p>摘要报告在评测集上相对 base model 最高提升 14.8%。</p></div>
+      <div class="card"><div class="kpi">A800</div><h4>可复现实验</h4><p>论文称训练评测可在单张 NVIDIA A800 80GB 上执行。</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="mechanism">
+    <h2>2. 框架图交互：把记忆生命周期模块化</h2>
+    <div class="figure-grid">
+      <div class="diagram">
+        <div class="flow">
+          <button class="node active" data-key="module"><b>1. Module Layer</b><span>定义 extraction、update、retrieval、agent module。</span></button>
+          <button class="node" data-key="agent"><b>2. Agent Layer</b><span>把模块组合成 Memory-R1、RMM、MemAgent 风格代理。</span></button>
+          <button class="node" data-key="env"><b>3. Environment</b><span>提供任务反馈和多维 reward。</span></button>
+          <button class="node" data-key="trainer"><b>4. Trainer</b><span>用 GRPO 等方法优化记忆策略。</span></button>
+        </div>
+        <div class="logic-box">论文 Table 1 把 module 接口统一为 generate、rollout、inference：训练时产生中间状态或轨迹，推理时只执行不可训练调用。</div>
+      </div>
+      <aside class="info-panel">
+        <h3 id="infoTitle">1. Module Layer</h3>
+        <p id="infoBody">Module Layer 把复杂的记忆生命周期拆成原子操作，包括 memory extractor、updater、retriever，以及端到端 agent module。</p>
+        <p class="small">悬停或点击左侧模块查看解释。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section" id="interfaces">
+    <h2>3. 标准接口：generate / rollout / inference</h2>
+    <div class="table-wrap"><table><thead><tr><th>接口</th><th>训练或推理模型</th><th>奖励</th><th>作用</th></tr></thead><tbody>
+      <tr><td><code>generate</code></td><td>Training Model</td><td>Deferred</td><td>产生中间状态；奖励在完整交互或轨迹后分配。</td></tr>
+      <tr><td><code>rollout</code></td><td>Training Model</td><td>Final reward</td><td>产生可被最终任务级奖励评价的轨迹。</td></tr>
+      <tr><td><code>inference</code></td><td>Inference Model / APIs</td><td>None</td><td>只用于推理，不参与训练。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="section" id="results">
+    <h2>4. 实验结果：验证框架能复现并优化记忆策略</h2>
+    <div class="table-wrap"><table><thead><tr><th>设置</th><th>论文结果</th><th>解读</th></tr></thead><tbody>
+      <tr><td>验证对象</td><td>使用公开 MemAgent 架构与训练/评测数据。</td><td>说明 MemFactory 不是只停留在抽象接口，而是跑通了一个复杂 Memory-RL 范式。</td></tr>
+      <tr><td>Qwen3-1.7B</td><td>平均分相对提升 14.8%，OOD benchmark 略降。</td><td>小模型主任务收益明显，但迁移稳定性仍有限。</td></tr>
+      <tr><td>Qwen3-4B-Instruct</td><td>平均相对提升 7.3%，包括 OOD benchmark 的一致提升。</td><td>更大模型能更稳地迁移 recurrent memory policy。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="section" id="limits">
+    <h2>5. 边界与工程启发</h2>
+    <div class="grid two">
+      <div class="card"><h4>适合的场景</h4><p>要比较多种 Memory-RL 策略、复现实验、替换 extractor/updater/retriever 的研究与工程团队。</p></div>
+      <div class="card"><h4>不是完整产品系统</h4><p>框架降低训练和评测门槛，但不等于已经提供用户权限、可视化编辑、数据治理和线上运维。</p></div>
+    </div>
+    <div class="callout warn"><b>谨慎点：</b>论文中的代码链接为 MemTensor/MemFactory；计划里提到的 xiaomi-research/memfactory 当前返回 404，因此页面采用论文 PDF 中可访问的仓库地址。</div>
+  </section>
+
+  <section class="section" id="sources">
+    <h2>6. 来源</h2>
+    <p>论文：<a href="https://arxiv.org/abs/2603.29493">arXiv:2603.29493</a>；代码：<a href="https://github.com/MemTensor/MemFactory">github.com/MemTensor/MemFactory</a>。</p>
+  </section>
+  <div class="footer">本页面依据 MemFactory 论文与可访问 GitHub 仓库整理；实验数字取自论文摘要、Table 1 与正文结果说明。</div>
+</div>
+<script>
+const info={module:['1. Module Layer','Module Layer 把复杂的记忆生命周期拆成原子操作，包括 memory extractor、updater、retriever，以及端到端 agent module。'],agent:['2. Agent Layer','Agent Layer 负责把模块组合成完整记忆代理，可复现 Memory-R1、RMM、MemAgent 等范式。'],env:['3. Environment','Environment 提供任务输入、交互反馈和多维 reward，是 Memory-RL 训练的外部评价源。'],trainer:['4. Trainer','Trainer 集成 GRPO 等优化算法，把 rollout 轨迹转成可训练的策略更新。']};
+document.querySelectorAll('.node').forEach(node=>{node.addEventListener('mouseenter',()=>setInfo(node.dataset.key));node.addEventListener('click',()=>setInfo(node.dataset.key));});
+function setInfo(key){document.getElementById('infoTitle').textContent=info[key][0];document.getElementById('infoBody').textContent=info[key][1];document.querySelectorAll('.node').forEach(node=>node.classList.toggle('active',node.dataset.key===key));}
+</script>
+</body>
+</html>
