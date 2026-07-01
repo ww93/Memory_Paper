@@ -3,101 +3,112 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>UMem 交互式论文解读：Unified Memory Extraction and Management</title>
+<title>UMem 深度解读：Unified Memory Extraction and Management</title>
 <script>
-window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' }
+};
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-<style>
-:root { --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#667085; --line:#d7dde8; --brand:#0f766e; --brand2:#7c3aed; --warn:#b45309; --ok:#15803d; --shadow:0 12px 30px rgba(31,41,55,.08); --radius:18px; }
-*{box-sizing:border-box} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#e8fff8 0,transparent 32rem),var(--bg);color:var(--text);line-height:1.72} a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.wrapper{max-width:1180px;margin:0 auto;padding:28px 18px 80px}.hero{background:linear-gradient(135deg,#0f172a,#0f766e 52%,#6d28d9);color:#fff;border-radius:28px;padding:38px 34px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;border-radius:50%;right:-180px;top:-210px;background:rgba(255,255,255,.12)}.hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;letter-spacing:0}.hero p{max-width:960px;margin:12px 0 0;font-size:1.07rem;opacity:.95}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.badge{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);font-size:.92rem}.section{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}.section h2{margin:0 0 12px;font-size:1.65rem;letter-spacing:0}.section h3{margin:26px 0 10px;font-size:1.23rem}.section h4{margin:18px 0 8px;font-size:1.05rem}.lead{font-size:1.04rem;color:#344054}.small{color:var(--muted);font-size:.92rem}.callout{border-left:5px solid var(--brand);background:#ecfdf5;padding:15px 18px;border-radius:12px;margin:16px 0}.callout.warn{border-left-color:var(--warn);background:#fffbeb}.callout.ok{border-left-color:var(--ok);background:#f0fdf4}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:860px){.grid.two,.grid.three{grid-template-columns:1fr}}.card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}.card h4{margin-top:0}.kpi{font-size:1.45rem;font-weight:800;color:var(--brand);margin-bottom:4px}.table-wrap{overflow-x:auto;margin-top:14px;border-radius:14px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;background:#fff;min-width:760px}th,td{border-bottom:1px solid #edf0f5;padding:11px 12px;vertical-align:top;text-align:left}th{background:#f3f6fb;font-weight:700;color:#111827}tr:last-child td{border-bottom:none}.figure-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}@media(max-width:980px){.figure-grid{grid-template-columns:1fr}}.diagram{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px;display:grid;gap:12px}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:stretch}@media(max-width:980px){.flow{grid-template-columns:1fr}}.node{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;min-height:126px;text-align:left;cursor:pointer;color:var(--text);font:inherit}.node:hover,.node.active{border-color:var(--brand);background:#ecfdf5}.node b{display:block;color:var(--brand2);margin-bottom:5px}.node span{color:var(--muted);font-size:.92rem}.info-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);padding:18px;min-height:330px;position:sticky;top:12px}.info-panel h3{margin-top:0;color:var(--brand)}.pipeline{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.step{flex:1 1 180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;position:relative}.step b{color:var(--brand2)}.step:after{content:"→";position:absolute;right:-13px;top:40%;color:#94a3b8;font-weight:800}.step:last-child:after{display:none}@media(max-width:700px){.step:after{display:none}}.logic-box{border-left:4px solid var(--brand2);background:#f5f3ff;padding:12px 14px;border-radius:12px;margin:12px 0}code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}.footer{margin-top:28px;color:var(--muted);text-align:center;font-size:.92rem}
-</style>
+<link rel="stylesheet" href="../../assets/paper-deep.css" />
 </head>
-<body>
-<div class="wrapper">
+<body style="--accent:#0f766e;--accent-2:#7c3aed;">
+<main class="page">
+  <div class="topbar">
+    <a class="back-link" href="../../">← 返回论文列表</a>
+    <nav class="source-links"><a href="https://arxiv.org/abs/2602.10652">arXiv</a><a href="https://arxiv.org/pdf/2602.10652">PDF</a></nav>
+  </div>
   <section class="hero">
-    <h1>UMem 交互式论文解读</h1>
-    <p><b>UMEM: Unified Memory Extraction and Management Framework for Generalizable Memory</b> 关心的不是“记忆库怎么检索”，而是“从经验里抽取什么记忆、又如何管理这些记忆”必须被联合优化。论文把记忆优化器本身作为可训练策略，用 Semantic Neighborhood Modeling 避免抽到只对单个样本有用的噪声。</p>
-    <div class="badges"><span class="badge">Joint Extraction + Management</span><span class="badge">Semantic Neighborhood</span><span class="badge">GRPO</span><span class="badge">Self-Evolving Agent</span><span class="badge">Generalizable Memory</span></div>
+    <span class="eyebrow">GENERALIZABLE MEMORY</span>
+    <h1>UMem 深度解读</h1>
+    <p class="subtitle">UMem 关注的是自演化 agent 的记忆如何从经验中泛化。它把 memory extraction 和 memory management 统一成一个可训练的 Mem-Optimizer，并用语义邻域内的边际收益来避免实例噪声。</p>
+    <div class="badge-row"><span class="badge">Mem-Optimizer</span><span class="badge">Semantic Neighborhood</span><span class="badge">Marginal Utility Reward</span><span class="badge">GRPO</span><span class="badge">Self-evolving agent</span></div>
   </section>
 
-  <section class="section" id="overview">
-    <h2>1. 核心判断</h2>
-    <p class="lead">UMem 把长期记忆看作 agent 的“可演化参数”：冻结 executor 做任务，memory optimizer 从执行轨迹中抽取 insight 并更新 memory bank。它的重点是让记忆从实例经验中泛化，而不是把每条轨迹里的细节都塞进库里。</p>
-    <div class="callout"><b>一句话概括：</b>UMem 不是只训练“怎么增删改查记忆”，而是同时训练“什么才值得被抽成记忆”和“这些记忆如何并入库”。这让 extraction 和 management 不再错位。</div>
-    <div class="grid three">
-      <div class="card"><div class="kpi">5</div><h4>评测任务</h4><p>AIME、GPQA Diamond、HLE、HotpotQA、ALFWorld。</p></div>
-      <div class="card"><div class="kpi">10.67%</div><h4>交互任务提升</h4><p>摘要报告在多轮交互任务上最高提升 10.67%。</p></div>
-      <div class="card"><div class="kpi">N=3</div><h4>邻域大小</h4><p>消融显示语义邻域大小 3 在任务特异性与迁移之间取得更好平衡。</p></div>
+  <section class="section">
+    <h2>1. 设计思路：从“记住样本”到“沉淀可迁移经验”</h2>
+    <p class="lead">传统 memory pipeline 往往先检索，再从当前轨迹里抽取一条记忆并塞进库里。UMem 认为这会落入 rote memorization trap：模型保存了实例快捷方式，下一次遇到相似但不相同的问题时反而被误导。</p>
+    <div class="wide-figure">
+      <img src="../../assets/frameworks/umem-figure1.png" alt="UMem Figure 1: vanilla memory pipeline versus UMEM" />
+      <p class="figure-caption">论文 Figure 1：左侧展示 vanilla 方法如何把实例特异答案当成记忆，右侧展示 UMem 用可学习 Mem-Optimizer 联合优化抽取与管理。</p>
     </div>
+    <div class="note">UMem 的关键不是让 memory bank 更大，而是让 memory bank 中的条目更像可复用的 insight。它把记忆优化器当成策略模型来训练。</div>
   </section>
 
-  <section class="section" id="mechanism">
-    <h2>2. 机制图交互：把经验变成可泛化记忆</h2>
-    <div class="figure-grid">
-      <div class="diagram">
-        <div class="flow">
-          <button class="node active" data-key="executor"><b>1. Frozen Executor</b><span>带着已有记忆完成任务并产生轨迹。</span></button>
-          <button class="node" data-key="extract"><b>2. Memory Extraction</b><span>从轨迹中蒸馏出候选 insight。</span></button>
-          <button class="node" data-key="neighbor"><b>3. Semantic Neighborhood</b><span>按语义近邻评估记忆是否跨样本有用。</span></button>
-          <button class="node" data-key="manage"><b>4. Management</b><span>把候选记忆合并、更新或丢弃。</span></button>
-          <button class="node" data-key="reward"><b>5. GRPO Reward</b><span>用邻域级边际效用训练策略。</span></button>
+  <section class="section">
+    <h2>2. 论文原图框架：Figure 2 的训练闭环</h2>
+    <div class="figure-layout" data-hotspot-root="framework">
+      <div class="figure-shell">
+        <div class="figure-stage">
+          <div class="figure-canvas">
+          <img src="../../assets/frameworks/umem-figure2.png" alt="UMem Figure 2: overview of semantic neighborhood modeling and Mem-Optimizer training" />
+          <button class="hotspot" style="--x:13%;--y:17%;" data-hotspot="neighborhood" aria-label="Semantic Neighborhood">1</button>
+<button class="hotspot" style="--x:47%;--y:10%;" data-hotspot="bank" aria-label="Memory Bank">2</button>
+<button class="hotspot" style="--x:63%;--y:27%;" data-hotspot="executor" aria-label="Frozen Executor">3</button>
+<button class="hotspot" style="--x:40%;--y:52%;" data-hotspot="optimizer" aria-label="Mem-Optimizer">4</button>
+<button class="hotspot" style="--x:79%;--y:71%;" data-hotspot="reward" aria-label="Marginal Utility Reward">5</button>
+<button class="hotspot" style="--x:94%;--y:31%;" data-hotspot="evolution" aria-label="Online Evolution">6</button>
+          </div>
         </div>
-        <div class="logic-box">UMem 的核心防线是：一条记忆不能只对当前样本有帮助，它还要能提高语义邻域内相关查询的表现。</div>
+        <p class="figure-caption">论文 Figure 2：左侧是 Semantic Neighborhood Modeling，右侧是 Mem-Optimizer 训练、rollout、reward 计算和在线记忆演化。</p>
       </div>
-      <aside class="info-panel">
-        <h3 id="infoTitle">1. Frozen Executor</h3>
-        <p id="infoBody">executor 是执行任务的冻结模型。UMem 不直接改它的主参数，而是通过记忆优化器改进后续任务可用的 memory bank。</p>
-        <p class="small">悬停或点击左侧模块查看解释。</p>
+      <aside class="hotspot-panel">
+        <p class="label" data-hot-label></p>
+        <h3 data-hot-title></h3>
+        <p data-hot-body></p>
+        <div data-hot-points></div>
       </aside>
     </div>
   </section>
 
-  <section class="section" id="training">
-    <h2>3. 训练目标：从样本收益到邻域收益</h2>
-    <div class="pipeline">
-      <div class="step"><b>Forward Pass</b><p>executor 使用检索到的 memories 完成任务。</p></div>
-      <div class="step"><b>Trajectory</b><p>轨迹成为 extraction 和 management 的输入材料。</p></div>
-      <div class="step"><b>Marginal Utility</b><p>比较记忆更新前后在语义邻域里的收益。</p></div>
-      <div class="step"><b>Policy Update</b><p>通过 GRPO 优化记忆优化器。</p></div>
+  <section class="section">
+    <h2>3. 形式化：冻结执行器，训练记忆优化器</h2>
+    <p class="lead">论文把 self-evolving agent 写成两部分：冻结 executor \(E\) 负责执行任务，外部 memory bank \(B\) 是可演化的非参数状态，Mem-Optimizer \(\pi_\phi\) 负责从轨迹中提炼并应用记忆更新。</p>
+    <div class="formula"><code>tau_q, y_hat_q = E(q, B_topk; Theta_0)</code></div>
+    <div class="formula"><code>a_q = (Delta_q, opt_q) ~ pi_phi(. | q, tau_q, y_hat_q),  B_{t+1} = Apply(B_t, a_q)</code></div>
+    <div class="grid two">
+      <div class="mini-card"><h3>Extraction 不是固定 prompt</h3><p>Delta_q 是被训练出来的记忆内容，目标是从轨迹里蒸馏“可复用原则”。</p></div>
+      <div class="mini-card"><h3>Management 不是孤立规则</h3><p>opt_q 决定 ADD/UPDATE 等操作，但它必须与抽取出的内容联合优化。</p></div>
     </div>
-    <div class="callout ok"><b>消融要点：</b>论文指出，去掉 Semantic Neighborhood Modeling 会导致明显性能下降；只优化 management 而不优化 extraction，也会让总体表现下滑。</div>
   </section>
 
-  <section class="section" id="results">
-    <h2>4. 实验结果：泛化比记得多更重要</h2>
-    <div class="table-wrap"><table><thead><tr><th>观察</th><th>论文依据</th><th>解读</th></tr></thead><tbody>
-      <tr><td>复杂推理和交互任务都有收益</td><td>Table 1 覆盖 AIME、GPQA Diamond、HLE、HotpotQA、ALFWorld。</td><td>UMem 不是单一 QA 记忆库，而是面向 self-evolving agent 的通用记忆优化器。</td></tr>
-      <tr><td>强 executor 提供更高质量轨迹</td><td>论文分析 GPT-5.1、Gemini-2.5-Flash 等强 executor 会带来更明显收益。</td><td>记忆优化器依赖执行轨迹质量；轨迹越好，抽出的 insight 越可能有用。</td></tr>
-      <tr><td>持续演化曲线单调增长</td><td>摘要称 UMEM maintains a monotonic growth curve during continuous evolution。</td><td>这是 self-evolving memory 的关键指标：越用越好，而不是越记越脏。</td></tr>
+  <section class="section">
+    <h2>4. Algorithm 1：两阶段训练逻辑</h2>
+    <div class="steps">
+      <div class="step"><b>Offline Semantic Neighborhood Modeling</b><p>对每个 query，从语料 D 中找 N 个最近邻 query，形成 NN(q)。这一步为后续泛化奖励提供评价集合。</p></div>
+      <div class="step"><b>Executor rollout</b><p>冻结 executor 使用当前 memory bank 生成轨迹 tau_q 和预测结果。</p></div>
+      <div class="step"><b>Mem-Optimizer group sampling</b><p>对同一状态采样 G 个 memory update action，形成 GRPO 所需的候选组。</p></div>
+      <div class="step"><b>Neighbor-level utility gain</b><p>把候选 action 应用到 bank 后，计算它对 NN(q) 中每个邻居任务的效用变化，再聚合成奖励。</p></div>
+      <div class="step"><b>GRPO update and online evolution</b><p>用组内相对优势更新 Mem-Optimizer，同时让 memory bank 在训练中持续演化。</p></div>
+    </div>
+    <div class="note good">消融结果支持论文的核心主张：移除 Semantic Neighborhood Modeling 会明显掉分；只优化 management 或只优化 extraction 都不如联合优化。</div>
+  </section>
+
+  <section class="section">
+    <h2>5. 实验怎么读：UMem 赢在“泛化记忆质量”</h2>
+    <div class="table-wrap"><table><thead><tr><th>证据</th><th>论文报告</th><th>含义</th></tr></thead><tbody>
+      <tr><td>Figure 1 示例任务</td><td>Multi-turn 从 61.11 到 71.78，gain +10.67；Single-turn 从 40.33 到 46.15，gain +5.82。</td><td>提升来自更好的记忆演化，而不是 executor 参数变化。</td></tr>
+      <tr><td>五个 benchmark</td><td>AIME、GPQA Diamond、HLE、HotpotQA、ALFWorld。</td><td>论文覆盖推理、问答和交互环境，意图证明不是单一 QA 模板。</td></tr>
+      <tr><td>Table 1</td><td>论文称 UMEM 在大多数设置上超过 ReMem、Memp 等基线；UMEM-Qwen3-4B + GPT-5.1 在 ALFWorld 达到 82.84% success rate。</td><td>强 executor 提供更高质量轨迹，Mem-Optimizer 更容易抽到有效 insight。</td></tr>
+      <tr><td>Table 2</td><td>N=3 的语义邻域大小表现最好；N=1 和 N=5 都下降。</td><td>邻域奖励必须在“足够相似”和“足够多样”之间平衡。</td></tr>
     </tbody></table></div>
   </section>
 
-  <section class="section" id="limits">
-    <h2>5. 边界与工程启发</h2>
+  <section class="section">
+    <h2>6. 工程启发与边界</h2>
     <div class="grid two">
-      <div class="card"><h4>适合的场景</h4><p>需要从交互轨迹中沉淀可复用策略、偏好、解题经验的 agent，而不是只保存用户事实。</p></div>
-      <div class="card"><h4>需要补的系统层</h4><p>论文聚焦记忆优化器训练；生产系统还要补权限、审计、可解释、删除和用户可控的外部壳。</p></div>
+      <div class="mini-card"><h3>适用</h3><p>需要从反复交互中沉淀策略、经验和解题原则的 agent，比如数学推理、网页/环境交互和长期任务助手。</p></div>
+      <div class="mini-card"><h3>边界</h3><p>论文没有声称已经提供生产级用户记忆治理，也没有把代码/模型“将公开”写成“已经开源”。</p></div>
     </div>
-    <div class="callout warn"><b>谨慎点：</b>论文 PDF 写明代码和模型将公开发布；在未确认正式仓库前，不应把它当作已经可直接部署的工程包。</div>
+    <div class="note warn">UMem 依赖高质量 query corpus 和 executor trajectory。若轨迹本身低质，或语义邻域构造偏离真实未来任务，Mem-Optimizer 可能学到错误泛化。</div>
   </section>
-
-  <section class="section" id="sources">
-    <h2>6. 来源</h2>
-    <p>论文：<a href="https://arxiv.org/abs/2602.10652">arXiv:2602.10652</a>。</p>
+  <section class="section">
+    <h2>来源与核验边界</h2>
+    <p class="source-note">本页依据 arXiv:2602.10652 整理。代码与模型状态按论文原文表述为 will be publicly released，未写成已发布事实。</p>
   </section>
-  <div class="footer">本页面依据 UMem 论文整理；实验数字取自论文摘要、Table 1 与 Table 2 文字说明。</div>
-</div>
-<script>
-const info = {
-  executor:['1. Frozen Executor','executor 是执行任务的冻结模型。UMem 不直接改它的主参数，而是通过记忆优化器改进后续任务可用的 memory bank。'],
-  extract:['2. Memory Extraction','extraction 负责从经验轨迹中抽取可复用 insight。论文认为只用静态 prompt 抽取会累积 instance-specific noise。'],
-  neighbor:['3. Semantic Neighborhood','Semantic Neighborhood Modeling 用一簇语义相关查询评估记忆效用，避免记忆只服务当前样本。'],
-  manage:['4. Management','management 负责把候选记忆整合进 memory bank，包括保留、更新、合并或丢弃。'],
-  reward:['5. GRPO Reward','训练信号是邻域级 marginal utility reward，而不是单个样本上的即时收益。']
-};
-document.querySelectorAll('.node').forEach(node=>{node.addEventListener('mouseenter',()=>setInfo(node.dataset.key));node.addEventListener('click',()=>setInfo(node.dataset.key));});
-function setInfo(key){document.getElementById('infoTitle').textContent=info[key][0];document.getElementById('infoBody').textContent=info[key][1];document.querySelectorAll('.node').forEach(node=>node.classList.toggle('active',node.dataset.key===key));}
-</script>
+</main>
+<script>window.paperHotspots = {"framework":{"neighborhood":{"label":"Figure 2 / Semantic Neighborhood","title":"语义邻域是泛化约束","body":"给定查询 q，UMem 不只评价 q 本身，而是检索语义相近的 Top-N queries。候选记忆必须能帮助这一组相邻任务，才被认为有泛化价值。","points":["论文消融显示 N=3 在任务特异性和跨任务迁移之间较好。","N 太小容易过拟合当前样本，N 太大则引入噪声。"]},"bank":{"label":"Figure 2 / Memory Bank","title":"Memory bank 是 agent 的外部可演化参数","body":"Executor 的主模型参数冻结，真正随经验变化的是外部 memory bank。Mem-Optimizer 的动作会改变这个 bank。","points":["论文把 memory bank 表述为 key-value 结构。","记忆质量直接限制冻结 executor 的表现上限。"]},"executor":{"label":"Figure 2 / Frozen Executor","title":"Executor 生成轨迹，但不被训练","body":"Executor 使用当前 memory 完成任务，产生 trajectory。轨迹既暴露成功经验，也暴露失败路径，作为 Mem-Optimizer 抽取 insight 的输入。","points":["强 executor 产生更高质量轨迹，论文报告收益更明显。","UMem 优化的是记忆优化器，不是 executor 主参数。"]},"optimizer":{"label":"Figure 2 / Mem-Optimizer","title":"联合学习抽取和管理","body":"Mem-Optimizer 从 trajectory 中生成记忆内容 delta，并选择管理操作。论文强调不能只优化 management，因为 extraction 如果是静态模板，会持续带入低质量噪声。","points":["action 包含抽取出的记忆和管理操作。","目标是抽 generalizable principle，而不是复制实例细节。"]},"reward":{"label":"Figure 2 / Marginal Utility Reward","title":"奖励来自邻域级边际效用","body":"候选更新应用到 memory bank 后，UMem 比较更新前后在语义邻域中的表现变化，形成 marginal utility reward。","points":["奖励包含任务成功收益和效率正则等因素。","GRPO 对一组 rollout 进行相对优势优化。"]},"evolution":{"label":"Figure 2 / Online Memory Evolution","title":"训练中边学习边改 memory bank","body":"UMem 不是离线抽一批记忆后固定不动，而是在训练 rollouts 中持续演化 memory bank，迫使 agent 学会使用一个不断变好的记忆系统。","points":["摘要称连续演化过程中保持 monotonic growth curve。","这也意味着训练稳定性依赖 reward 和操作模板。"]}}};</script>
+<script src="../../assets/paper-deep.js"></script>
 </body>
 </html>

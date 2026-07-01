@@ -3,94 +3,108 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>RMM 交互式论文解读：Reflective Memory Management</title>
+<title>RMM 深度解读：Reflective Memory Management</title>
 <script>
-window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' }
+};
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-<style>
-:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--line:#d7dde8;--brand:#0f766e;--brand2:#1d4ed8;--warn:#b45309;--ok:#15803d;--shadow:0 12px 30px rgba(31,41,55,.08);--radius:18px}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#e8fff8 0,transparent 32rem),var(--bg);color:var(--text);line-height:1.72}a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.wrapper{max-width:1180px;margin:0 auto;padding:28px 18px 80px}.hero{background:linear-gradient(135deg,#111827,#0f766e 52%,#1d4ed8);color:#fff;border-radius:28px;padding:38px 34px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;border-radius:50%;right:-180px;top:-210px;background:rgba(255,255,255,.12)}.hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;letter-spacing:0}.hero p{max-width:960px;margin:12px 0 0;font-size:1.07rem;opacity:.95}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.badge{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);font-size:.92rem}.section{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}.section h2{margin:0 0 12px;font-size:1.65rem;letter-spacing:0}.section h3{margin:26px 0 10px;font-size:1.23rem}.section h4{margin:18px 0 8px;font-size:1.05rem}.lead{font-size:1.04rem;color:#344054}.small{color:var(--muted);font-size:.92rem}.callout{border-left:5px solid var(--brand);background:#ecfdf5;padding:15px 18px;border-radius:12px;margin:16px 0}.callout.warn{border-left-color:var(--warn);background:#fffbeb}.callout.ok{border-left-color:var(--ok);background:#f0fdf4}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:860px){.grid.two,.grid.three{grid-template-columns:1fr}}.card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}.card h4{margin-top:0}.kpi{font-size:1.45rem;font-weight:800;color:var(--brand);margin-bottom:4px}.table-wrap{overflow-x:auto;margin-top:14px;border-radius:14px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;background:#fff;min-width:760px}th,td{border-bottom:1px solid #edf0f5;padding:11px 12px;vertical-align:top;text-align:left}th{background:#f3f6fb;font-weight:700;color:#111827}tr:last-child td{border-bottom:none}.figure-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}@media(max-width:980px){.figure-grid{grid-template-columns:1fr}}.diagram{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px;display:grid;gap:12px}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:stretch}@media(max-width:980px){.flow{grid-template-columns:1fr}}.node{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;min-height:126px;text-align:left;cursor:pointer;color:var(--text);font:inherit}.node:hover,.node.active{border-color:var(--brand);background:#ecfdf5}.node b{display:block;color:var(--brand2);margin-bottom:5px}.node span{color:var(--muted);font-size:.92rem}.info-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);padding:18px;min-height:330px;position:sticky;top:12px}.info-panel h3{margin-top:0;color:var(--brand)}.pipeline{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.step{flex:1 1 180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;position:relative}.step b{color:var(--brand2)}.step:after{content:"→";position:absolute;right:-13px;top:40%;color:#94a3b8;font-weight:800}.step:last-child:after{display:none}@media(max-width:700px){.step:after{display:none}}.logic-box{border-left:4px solid var(--brand2);background:#eff6ff;padding:12px 14px;border-radius:12px;margin:12px 0}code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}.footer{margin-top:28px;color:var(--muted);text-align:center;font-size:.92rem}
-</style>
+<link rel="stylesheet" href="../../assets/paper-deep.css" />
 </head>
-<body>
-<div class="wrapper">
+<body style="--accent:#0f766e;--accent-2:#1d4ed8;">
+<main class="page">
+  <div class="topbar">
+    <a class="back-link" href="../../">← 返回论文列表</a>
+    <nav class="source-links"><a href="https://aclanthology.org/2025.acl-long.413/">ACL Anthology</a><a href="https://arxiv.org/abs/2503.08026">arXiv</a><a href="https://arxiv.org/pdf/2503.08026">PDF</a></nav>
+  </div>
   <section class="hero">
-    <h1>RMM 交互式论文解读</h1>
-    <p><b>In Prospect and Retrospect: Reflective Memory Management for Long-term Personalized Dialogue Agents</b> 面向长期个性化对话。它认为固定粒度记忆和固定检索都不够：一方面需要面向未来组织记忆，另一方面需要根据当前回答中的引用证据在线调整检索。</p>
-    <div class="badges"><span class="badge">Prospective Reflection</span><span class="badge">Retrospective Reflection</span><span class="badge">Citation-based Reward</span><span class="badge">MSC</span><span class="badge">LongMemEval</span></div>
+    <span class="eyebrow">REFLECTIVE PERSONALIZED MEMORY</span>
+    <h1>RMM 深度解读</h1>
+    <p class="subtitle">RMM 面向长期个性化对话，解决两个具体问题：固定粒度记忆会把对话主题切碎，固定检索又无法根据用户和场景动态调整。它用 Prospective Reflection 组织未来可检索记忆，用 Retrospective Reflection 根据引用证据在线修正检索。</p>
+    <div class="badge-row"><span class="badge">Prospective Reflection</span><span class="badge">Retrospective Reflection</span><span class="badge">Citation reward</span><span class="badge">Reranker RL</span><span class="badge">LongMemEval</span></div>
   </section>
 
-  <section class="section" id="overview">
-    <h2>1. 核心判断</h2>
-    <p class="lead">RMM 是一个很适合“陪伴场景”讨论的记忆系统论文：它不只关心记忆是否存在，还关心记忆的粒度、组织方式、检索适配和对话生成中的证据引用。它把“未来会怎么用”与“刚才用了什么”一起纳入记忆管理。</p>
-    <div class="callout"><b>一句话概括：</b>RMM 用 Prospective Reflection 生成面向未来检索的多粒度记忆，再用 Retrospective Reflection 根据 LLM 回答引用的证据，以在线 RL 风格持续修正 retrieval/reranking。</div>
-    <div class="grid three">
-      <div class="card"><div class="kpi">+10%</div><h4>LongMemEval</h4><p>摘要称相较无记忆管理基线有超过 10% accuracy improvement。</p></div>
-      <div class="card"><div class="kpi">33.4</div><h4>MSC METEOR</h4><p>Table 1 中 RMM + GTE 达到 33.4% METEOR。</p></div>
-      <div class="card"><div class="kpi">70.4</div><h4>LongMemEval Acc.</h4><p>Table 1 中 RMM + GTE 达到 70.4% Accuracy。</p></div>
+  <section class="section">
+    <h2>1. 设计思路：长期对话记忆不是“越多越好”</h2>
+    <p class="lead">RMM 针对 personalized dialogue agent。论文认为长期记忆的两个主要障碍是：一，固定粒度的摘要会让同一主题被拆散或重复；二，固定检索机制无法适配不同用户、不同对话阶段和不同任务。</p>
+    <div class="grid two">
+      <div class="mini-card"><h3>Prospective Reflection</h3><p>面向未来：会话结束后，把历史对话按 topic 组织成可检索的 memory entries，并决定 merge 或 add。</p></div>
+      <div class="mini-card"><h3>Retrospective Reflection</h3><p>回看刚才：根据 LLM 回答中实际引用了哪些记忆，在线更新 reranker。</p></div>
     </div>
   </section>
 
-  <section class="section" id="mechanism">
-    <h2>2. 机制图交互：前瞻与回顾</h2>
-    <div class="figure-grid">
-      <div class="diagram">
-        <div class="flow">
-          <button class="node active" data-key="history"><b>1. Full History</b><span>长期对话历史包含跨天、跨周甚至更久的信息。</span></button>
-          <button class="node" data-key="prospective"><b>2. Prospective</b><span>按 utterance、turn、session 多粒度总结。</span></button>
-          <button class="node" data-key="retrieve"><b>3. Retrieve</b><span>当前 query 从个性化 memory bank 中召回。</span></button>
-          <button class="node" data-key="retrospective"><b>4. Retrospective</b><span>根据回答引用的证据判断哪些记忆有用。</span></button>
-          <button class="node" data-key="rerank"><b>5. Reranker Update</b><span>用 citation score 调整后续检索排序。</span></button>
+  <section class="section">
+    <h2>2. 论文原始框架：Algorithm 1 串起 PR 与 RR</h2>
+    <div class="figure-layout" data-hotspot-root="framework">
+      <div class="figure-shell">
+        <div class="figure-stage">
+          <div class="figure-canvas">
+          <img src="../../assets/frameworks/rmm-algorithm1.png" alt="RMM Algorithm 1: Reflective Memory Management for dialogue agents" />
+          <button class="hotspot" style="--x:22%;--y:26%;" data-hotspot="retrieve" aria-label="Retrieve">1</button>
+<button class="hotspot" style="--x:21%;--y:33%;" data-hotspot="rerank" aria-label="Rerank">2</button>
+<button class="hotspot" style="--x:21%;--y:46%;" data-hotspot="generate" aria-label="Generate">3</button>
+<button class="hotspot" style="--x:24%;--y:56%;" data-hotspot="rl" aria-label="RL update">4</button>
+<button class="hotspot" style="--x:25%;--y:76%;" data-hotspot="prospective" aria-label="Prospective Reflection">5</button>
+          </div>
         </div>
-        <div class="logic-box">RMM 的反思不是事后写总结而已：Retrospective Reflection 把“这次回答真正引用了哪些记忆”转成检索优化信号。</div>
+        <p class="figure-caption">论文 Algorithm 1：RMM 每轮先 retrieve/rerank/generate，再用 citation reward 更新 reranker；session 结束时抽取并更新 topic-based memory bank。</p>
       </div>
-      <aside class="info-panel">
-        <h3 id="infoTitle">1. Full History</h3>
-        <p id="infoBody">长期陪伴对话里，重要信息可能出现在昨天、上周或更早的会话。RMM 的目标是让这些历史能被正确组织和召回。</p>
-        <p class="small">悬停或点击左侧模块查看解释。</p>
+      <aside class="hotspot-panel">
+        <p class="label" data-hot-label></p>
+        <h3 data-hot-title></h3>
+        <p data-hot-body></p>
+        <div data-hot-points></div>
       </aside>
     </div>
   </section>
 
-  <section class="section" id="results">
-    <h2>3. 实验结果：结构化记忆 + 自适应检索</h2>
-    <div class="table-wrap"><table><thead><tr><th>方法</th><th>MSC METEOR / BERT</th><th>LongMemEval Recall@5 / Acc.</th><th>说明</th></tr></thead><tbody>
-      <tr><td>RAG + GTE</td><td>27.5 / 52.1</td><td>62.4 / 63.6</td><td>强 retriever 的普通 RAG 已经有效，但仍受固定检索限制。</td></tr>
-      <tr><td>RMM + Contriever</td><td>30.8 / 55.4</td><td>60.4 / 61.2</td><td>即使用较弱 retriever，也能靠反思机制提升。</td></tr>
-      <tr><td>RMM + GTE</td><td>33.4 / 57.1</td><td>69.8 / 70.4</td><td>Table 1 中整体最佳。</td></tr>
+  <section class="section">
+    <h2>3. Prospective Reflection：把会话整理成未来可检索的 topic memory</h2>
+    <p class="lead">Prospective Reflection 发生在 session 结束后。LLM 从会话中抽取 topic summary 与 raw dialogue，并与当前 memory bank 中相近主题比较：相关则 merge，不相关则 add。</p>
+    <div class="wide-figure">
+      <img src="../../assets/frameworks/rmm-figure2.png" alt="RMM Figure 2: Prospective Reflection" />
+      <p class="figure-caption">论文 Figure 2：会话被 decomposed & summarized；新 memory 与现有 memory bank 对比，相关条目 merge，新主题 add。</p>
+    </div>
+    <div class="note">这一步解决的不是“回答时如何检索”，而是“未来要检索时，记忆应该以什么粒度存在”。topic summary 作为检索 key，raw dialogue 保留原始证据。</div>
+  </section>
+
+  <section class="section">
+    <h2>4. Retrospective Reflection：用引用证据训练 reranker</h2>
+    <p class="lead">Retrospective Reflection 发生在回答时。Retriever 先召回 Top-K，reranker 选择 Top-M，LLM 生成回答并标注每条 memory 是否被引用。这个 citation signal 被转成 binary reward 更新 reranker。</p>
+    <div class="wide-figure">
+      <img src="../../assets/frameworks/rmm-figure3.png" alt="RMM Figure 3: Retrospective Reflection" />
+      <p class="figure-caption">论文 Figure 3：Memory Bank → Retriever → Top-K → Reranker → Top-M → LLM Response；citation scores 作为 RL reward 反向更新 reranker。</p>
+    </div>
+    <div class="formula"><code>Delta phi = eta * (R - b) * grad_phi log P(M_M | q, M_K; phi)</code></div>
+    <div class="note good">RMM 的“反思”不是单纯生成总结，而是把回答中实际使用的证据转成检索排序的训练信号。</div>
+  </section>
+
+  <section class="section">
+    <h2>5. 实验怎么读：结构化记忆 + 自适应检索</h2>
+    <div class="table-wrap"><table><thead><tr><th>证据</th><th>论文报告</th><th>含义</th></tr></thead><tbody>
+      <tr><td>Table 1 / RMM + GTE</td><td>MSC METEOR / BERTScore = 33.4 / 57.1；LongMemEval Recall@5 / Accuracy = 69.8 / 70.4。</td><td>强 retriever 加上 RMM 的结构化记忆与 rerank 反馈，取得整体最佳。</td></tr>
+      <tr><td>Table 1 / RAG + GTE</td><td>MSC 27.5 / 52.1；LongMemEval 62.4 / 63.6。</td><td>普通 RAG 有效，但固定检索仍低于 RMM。</td></tr>
+      <tr><td>Table 2 / Ablation</td><td>Contriever 下 RAG 24.8/58.8；+PR 28.6/59.6；+RR 27.5/60.2；完整 RMM 30.8/61.2。</td><td>PR 和 RR 都有贡献，完整系统最好。</td></tr>
+      <tr><td>Table 3 / Citation scores</td><td>LongMemEval 上 useful-memory F1 为 90.2，overall F1 为 86.7。</td><td>引用信号作为 reward 有一定可靠性，但仍是 LLM 生成信号。</td></tr>
     </tbody></table></div>
   </section>
 
-  <section class="section" id="ablation">
-    <h2>4. 消融：两个反思组件都重要</h2>
-    <div class="pipeline">
-      <div class="step"><b>RAG</b><p>Contriever 下 MSC METEOR 为 24.8，LongMemEval Acc. 为 58.8。</p></div>
-      <div class="step"><b>+ PR</b><p>Prospective Reflection 提升到 28.6 / 59.6。</p></div>
-      <div class="step"><b>+ RR</b><p>Retrospective Reflection 需要 reranker 配合，否则直接 fine-tune retriever 会失稳。</p></div>
-      <div class="step"><b>RMM</b><p>完整系统达到 30.8 / 61.2。</p></div>
-    </div>
-    <div class="callout ok"><b>证据质量：</b>Table 3 显示 citation-based scoring 在 LongMemEval 上识别 useful memory 的 F1 为 90.2%，overall F1 为 86.7%。</div>
-  </section>
-
-  <section class="section" id="limits">
-    <h2>5. 边界与工程启发</h2>
+  <section class="section">
+    <h2>6. 工程启发与边界</h2>
     <div class="grid two">
-      <div class="card"><h4>适合陪伴场景</h4><p>RMM 处理的是长期个性化对话，比纯长文档 QA 更接近家庭陪伴中的跨会话连续性。</p></div>
-      <div class="card"><h4>仍需治理壳</h4><p>它优化记忆组织和检索，但用户可见编辑、授权、删除和敏感信息边界仍需系统层实现。</p></div>
+      <div class="mini-card"><h3>适合</h3><p>长期个性化对话、陪伴型 agent、跨会话偏好/经历/健康信息回忆等需要证据连续性的场景。</p></div>
+      <div class="mini-card"><h3>边界</h3><p>论文主要处理文本记忆；limitations 中也提到 RL 更新成本、多模态适用性和动态 memory update 仍需优化。</p></div>
     </div>
-    <div class="callout warn"><b>谨慎点：</b>RMM 使用 LLM-generated citations 作为 reward 信号；真实产品中还要评估引用证据是否会泄露敏感历史。</div>
+    <div class="note warn">真实产品里必须额外处理隐私：RMM 依赖历史对话和 citation feedback，可能把敏感历史带入检索或回答，需要权限、删除和审计。</div>
   </section>
-
-  <section class="section" id="sources">
-    <h2>6. 来源</h2>
-    <p>正式论文：<a href="https://aclanthology.org/2025.acl-long.413/">ACL Anthology 2025.acl-long.413</a>；预印本：<a href="https://arxiv.org/abs/2503.08026">arXiv:2503.08026</a>。</p>
+  <section class="section">
+    <h2>来源与核验边界</h2>
+    <p class="source-note">本页依据 ACL Anthology 2025.acl-long.413 与 arXiv:2503.08026 整理。实验数字取自论文 Table 1、Table 2、Table 3；对 citation reward 的可靠性按论文验证边界陈述。</p>
   </section>
-  <div class="footer">本页面依据 RMM ACL 论文与 arXiv 版本整理；实验数字取自论文摘要、Table 1、Table 2 与 Table 3。</div>
-</div>
-<script>
-const info={history:['1. Full History','长期陪伴对话里，重要信息可能出现在昨天、上周或更早的会话。RMM 的目标是让这些历史能被正确组织和召回。'],prospective:['2. Prospective Reflection','Prospective Reflection 把历史按 utterance、turn、session 等粒度总结进 personalized memory bank。'],retrieve:['3. Retrieve','当前 query 会从 memory bank 中召回相关历史，而不是把所有历史塞进上下文。'],retrospective:['4. Retrospective Reflection','Retrospective Reflection 检查 LLM 回答引用了哪些证据，用引用结果评价检索质量。'],rerank:['5. Reranker Update','RMM 用 citation-based reward 调整 reranker，使未来检索更贴合对话上下文。']};
-document.querySelectorAll('.node').forEach(node=>{node.addEventListener('mouseenter',()=>setInfo(node.dataset.key));node.addEventListener('click',()=>setInfo(node.dataset.key));});
-function setInfo(key){document.getElementById('infoTitle').textContent=info[key][0];document.getElementById('infoBody').textContent=info[key][1];document.querySelectorAll('.node').forEach(node=>node.classList.toggle('active',node.dataset.key===key));}
-</script>
+</main>
+<script>window.paperHotspots = {"framework":{"retrieve":{"label":"Algorithm 1 / Retrieve","title":"先从 memory bank 召回 Top-K","body":"给定 query q 和 memory bank B，retriever f_theta 召回 Top-K 候选记忆。这里的 retriever 可以是 Contriever、Stella 或 GTE。","points":["召回阶段追求覆盖。","后续 reranker 再做精排。"]},"rerank":{"label":"Algorithm 1 / Rerank","title":"Reranker 选 Top-M","body":"RMM 不直接 fine-tune retriever，而是用轻量 reranker g_phi 对候选记忆排序，选出 Top-M 给 LLM 使用。","points":["Table 2 显示 RR without reranker 会严重掉分。","reranker 是 Retrospective Reflection 的可学习部件。"]},"generate":{"label":"Algorithm 1 / Generate","title":"LLM 同时生成回答和 citation scores","body":"LLM 输入 query、当前 session 和 Top-M memories，输出 response a，同时给每条 memory 生成是否被引用的信号 R_M。","points":["citation 不是事后人工标注。","论文认为 response-conditioned citations 比 prior/post-hoc 更有效。"]},"rl":{"label":"Algorithm 1 / RL_Update","title":"引用信号变成在线 RL reward","body":"被回答引用的 memory 得到 +1 useful reward，未引用得到 -1 not useful reward，用 REINFORCE 更新 reranker。","points":["这就是 Retrospective Reflection。","它让系统根据真实生成过程反思“刚才哪些检索有用”。"]},"prospective":{"label":"Algorithm 1 / Prospective","title":"会话结束后再组织记忆","body":"当 session 结束，RMM 从完整会话 S 中抽取 topic-based memories，并与 memory bank 中相近主题合并或新增。","points":["这就是 Prospective Reflection。","它面向未来检索优化粒度，而不是简单按 turn 或 session 切块。"]}}};</script>
+<script src="../../assets/paper-deep.js"></script>
 </body>
 </html>

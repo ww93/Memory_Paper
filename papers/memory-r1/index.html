@@ -3,94 +3,112 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Memory-R1 交互式论文解读：RL for Memory Management</title>
+<title>Memory-R1 深度解读：RL for Memory Management</title>
 <script>
-window.MathJax = { tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' }
+};
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-<style>
-:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#667085;--line:#d7dde8;--brand:#dc2626;--brand2:#2563eb;--warn:#b45309;--ok:#15803d;--shadow:0 12px 30px rgba(31,41,55,.08);--radius:18px}*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;background:radial-gradient(circle at top left,#fff1f1 0,transparent 32rem),var(--bg);color:var(--text);line-height:1.72}a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}.wrapper{max-width:1180px;margin:0 auto;padding:28px 18px 80px}.hero{background:linear-gradient(135deg,#111827,#b91c1c 52%,#1d4ed8);color:#fff;border-radius:28px;padding:38px 34px;box-shadow:var(--shadow);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:460px;height:460px;border-radius:50%;right:-180px;top:-210px;background:rgba(255,255,255,.12)}.hero h1{margin:0 0 10px;font-size:clamp(2rem,4vw,3.2rem);line-height:1.15;letter-spacing:0}.hero p{max-width:960px;margin:12px 0 0;font-size:1.07rem;opacity:.95}.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.badge{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(6px);font-size:.92rem}.section{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px}.section h2{margin:0 0 12px;font-size:1.65rem;letter-spacing:0}.section h3{margin:26px 0 10px;font-size:1.23rem}.section h4{margin:18px 0 8px;font-size:1.05rem}.lead{font-size:1.04rem;color:#344054}.small{color:var(--muted);font-size:.92rem}.callout{border-left:5px solid var(--brand);background:#fef2f2;padding:15px 18px;border-radius:12px;margin:16px 0}.callout.warn{border-left-color:var(--warn);background:#fffbeb}.callout.ok{border-left-color:var(--ok);background:#f0fdf4}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}@media(max-width:860px){.grid.two,.grid.three{grid-template-columns:1fr}}.card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff}.card h4{margin-top:0}.kpi{font-size:1.45rem;font-weight:800;color:var(--brand);margin-bottom:4px}.table-wrap{overflow-x:auto;margin-top:14px;border-radius:14px;border:1px solid var(--line)}table{border-collapse:collapse;width:100%;background:#fff;min-width:760px}th,td{border-bottom:1px solid #edf0f5;padding:11px 12px;vertical-align:top;text-align:left}th{background:#f3f6fb;font-weight:700;color:#111827}tr:last-child td{border-bottom:none}.figure-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}@media(max-width:980px){.figure-grid{grid-template-columns:1fr}}.diagram{border:1px solid var(--line);border-radius:18px;background:#f8fafc;padding:18px;display:grid;gap:12px}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;align-items:stretch}@media(max-width:980px){.flow{grid-template-columns:1fr}}.node{border:1px solid var(--line);background:#fff;border-radius:14px;padding:13px;min-height:126px;text-align:left;cursor:pointer;color:var(--text);font:inherit}.node:hover,.node.active{border-color:var(--brand);background:#fef2f2}.node b{display:block;color:var(--brand2);margin-bottom:5px}.node span{color:var(--muted);font-size:.92rem}.info-panel{border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#f8fafc);padding:18px;min-height:330px;position:sticky;top:12px}.info-panel h3{margin-top:0;color:var(--brand)}.pipeline{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.step{flex:1 1 180px;border:1px solid var(--line);background:#fff;border-radius:14px;padding:14px;position:relative}.step b{color:var(--brand2)}.step:after{content:"→";position:absolute;right:-13px;top:40%;color:#94a3b8;font-weight:800}.step:last-child:after{display:none}@media(max-width:700px){.step:after{display:none}}.logic-box{border-left:4px solid var(--brand2);background:#eff6ff;padding:12px 14px;border-radius:12px;margin:12px 0}code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace}.footer{margin-top:28px;color:var(--muted);text-align:center;font-size:.92rem}
-</style>
+<link rel="stylesheet" href="../../assets/paper-deep.css" />
 </head>
-<body>
-<div class="wrapper">
+<body style="--accent:#dc2626;--accent-2:#2563eb;">
+<main class="page">
+  <div class="topbar">
+    <a class="back-link" href="../../">← 返回论文列表</a>
+    <nav class="source-links"><a href="https://arxiv.org/abs/2508.19828">arXiv</a><a href="https://arxiv.org/pdf/2508.19828">PDF</a><a href="https://github.com/yansikuan/Memory-R1">GitHub</a></nav>
+  </div>
   <section class="hero">
-    <h1>Memory-R1 交互式论文解读</h1>
-    <p><b>Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning</b> 把外部记忆系统拆成两个可训练 agent：Memory Manager 决定 ADD / UPDATE / DELETE / NOOP，Answer Agent 从检索记忆中筛出真正相关条目并作答。它的关键是用 outcome-driven RL 学会“管理”和“使用”记忆。</p>
-    <div class="badges"><span class="badge">Memory Manager</span><span class="badge">Answer Agent</span><span class="badge">ADD / UPDATE / DELETE / NOOP</span><span class="badge">PPO / GRPO</span><span class="badge">152 QA pairs</span></div>
+    <span class="eyebrow">RL MEMORY MANAGER</span>
+    <h1>Memory-R1 深度解读</h1>
+    <p class="subtitle">Memory-R1 把外部记忆系统拆成两个可训练 agent：Memory Manager 学习维护 memory bank，Answer Agent 学习从检索记忆中蒸馏真正有用的证据。它的目标是用 outcome-driven RL 替代静态启发式记忆规则。</p>
+    <div class="badge-row"><span class="badge">Memory Manager</span><span class="badge">Answer Agent</span><span class="badge">ADD/UPDATE/DELETE/NOOP</span><span class="badge">PPO/GRPO</span><span class="badge">152 QA pairs</span></div>
   </section>
 
-  <section class="section" id="overview">
-    <h2>1. 核心判断</h2>
-    <p class="lead">Memory-R1 的核心不是发明新的向量库，而是让模型通过强化学习学会外部记忆的操作策略。它把“应该写什么、改什么、删什么”和“应该使用哪几条记忆回答”分开训练，降低静态启发式规则造成的记忆污染和检索噪声。</p>
-    <div class="callout"><b>一句话概括：</b>Memory-R1 让 memory pipeline 从 prompt 规则升级为可学习策略：Manager 管库，Answer Agent 去噪，最终用回答正确性反向塑造记忆行为。</div>
+  <section class="section">
+    <h2>1. 设计思路：让记忆系统的“写”和“用”都可学习</h2>
+    <p class="lead">Memory-R1 指出，外部记忆系统里的两个关键决策经常被 prompt 规则硬编码：新信息怎么写进库，以及回答时用哪几条检索记忆。论文把这两个决策分别交给 Memory Manager 和 Answer Agent，并用 RL 根据下游 QA 结果训练。</p>
     <div class="grid three">
-      <div class="card"><div class="kpi">4</div><h4>记忆操作</h4><p>ADD、UPDATE、DELETE、NOOP，是最小但可表达的外部记忆管理动作集。</p></div>
-      <div class="card"><div class="kpi">152</div><h4>训练 QA pairs</h4><p>摘要称只用 152 个训练问答对就能泛化到多个 benchmark。</p></div>
-      <div class="card"><div class="kpi">3B-14B</div><h4>模型尺度</h4><p>论文在 3B、7B、14B 等规模上分析扩展性。</p></div>
+      <div class="mini-card"><span class="kpi">4</span><h3>管理动作</h3><p>ADD、UPDATE、DELETE、NOOP 覆盖最常见的记忆生命周期。</p></div>
+      <div class="mini-card"><span class="kpi">2</span><h3>可训练 agent</h3><p>Manager 管库，Answer Agent 使用库，避免一个模型同时承担所有职责。</p></div>
+      <div class="mini-card"><span class="kpi">152</span><h3>训练 QA pairs</h3><p>论文称使用 152 个 QA pairs 即可带来跨 benchmark 的泛化收益。</p></div>
     </div>
   </section>
 
-  <section class="section" id="mechanism">
-    <h2>2. 机制图交互：管理与使用分离</h2>
-    <div class="figure-grid">
-      <div class="diagram">
-        <div class="flow">
-          <button class="node active" data-key="dialogue"><b>1. Dialogue Turns</b><span>多轮对话不断产生新事实和旧事实冲突。</span></button>
-          <button class="node" data-key="manager"><b>2. Memory Manager</b><span>对候选记忆执行结构化操作。</span></button>
-          <button class="node" data-key="bank"><b>3. Memory Bank</b><span>维护可检索、可更新的外部记忆状态。</span></button>
-          <button class="node" data-key="answer"><b>4. Answer Agent</b><span>从检索结果中预选择相关记忆。</span></button>
-          <button class="node" data-key="rl"><b>5. RL Signal</b><span>用最终答案或评测指标训练两个 agent。</span></button>
+  <section class="section">
+    <h2>2. 论文原图框架：Figure 2 的双阶段系统</h2>
+    <div class="figure-layout" data-hotspot-root="framework">
+      <div class="figure-shell">
+        <div class="figure-stage">
+          <div class="figure-canvas">
+          <img src="../../assets/frameworks/memory-r1-figure2.png" alt="Memory-R1 Figure 2: two-stage framework" />
+          <button class="hotspot" style="--x:5%;--y:35%;" data-hotspot="dialogue" aria-label="Dialogues">1</button>
+<button class="hotspot" style="--x:23%;--y:36%;" data-hotspot="extraction" aria-label="Info Extraction">2</button>
+<button class="hotspot" style="--x:62%;--y:29%;" data-hotspot="manager" aria-label="Memory Manager">3</button>
+<button class="hotspot" style="--x:88%;--y:36%;" data-hotspot="bank" aria-label="Memory bank constructed">4</button>
+<button class="hotspot" style="--x:20%;--y:78%;" data-hotspot="retrieve" aria-label="Retrieve Memory">5</button>
+<button class="hotspot" style="--x:67%;--y:77%;" data-hotspot="answer" aria-label="Answer Agent">6</button>
+          </div>
         </div>
-        <div class="logic-box">一个典型错误是把“又领养了一只狗”误删成新事实。Memory-R1 训练 Manager 学会 UPDATE 合并，而不是 DELETE+ADD 造成碎片化。</div>
+        <p class="figure-caption">论文 Figure 2：Stage 1 用 RL-fine-tuned Memory Manager 构造和更新 memory bank；Stage 2 用 Answer Agent 从检索记忆中蒸馏相关证据并回答。</p>
       </div>
-      <aside class="info-panel">
-        <h3 id="infoTitle">1. Dialogue Turns</h3>
-        <p id="infoBody">长期对话中，新信息可能补充旧信息，也可能与旧信息冲突。静态规则很容易把补充误判为矛盾。</p>
-        <p class="small">悬停或点击左侧模块查看解释。</p>
+      <aside class="hotspot-panel">
+        <p class="label" data-hot-label></p>
+        <h3 data-hot-title></h3>
+        <p data-hot-body></p>
+        <div data-hot-points></div>
       </aside>
     </div>
   </section>
 
-  <section class="section" id="training">
-    <h2>3. 训练设计：两个 agent 交替稳定训练</h2>
-    <div class="pipeline">
-      <div class="step"><b>Manager Training</b><p>采样记忆操作并更新 memory bank。</p></div>
-      <div class="step"><b>Answer Check</b><p>用下游回答表现衡量记忆状态是否更好。</p></div>
-      <div class="step"><b>Answer Agent Training</b><p>固定 Manager，训练模型筛选和使用检索记忆。</p></div>
-      <div class="step"><b>PPO / GRPO</b><p>两种 RL 策略都被实验，GRPO 通常更强。</p></div>
-    </div>
-    <div class="callout ok"><b>关键好处：</b>Answer Agent 可以从 60 条检索记忆中筛出真正相关的一条，减少“检索越多越吵”的问题。</div>
+  <section class="section">
+    <h2>3. Memory Manager：把 CRUD 变成策略学习</h2>
+    <p class="lead">Manager 的状态可以理解为 \(s=(x, M_{old})\)：当前抽取的新信息 x 和旧 memory bank。策略输出操作 \(o\) 和更新内容 \(m'\)。</p>
+    <div class="formula"><code>(o, m') ~ pi_theta(. | x, M_old)</code></div>
+    <div class="table-wrap"><table><thead><tr><th>操作</th><th>语义</th><th>典型风险</th></tr></thead><tbody>
+      <tr><td>ADD</td><td>新事实或新偏好进入 memory bank。</td><td>过度 ADD 会造成冗余和噪声污染。</td></tr>
+      <tr><td>UPDATE</td><td>把补充信息合并到已有记忆。</td><td>如果合并错对象，会覆盖正确旧事实。</td></tr>
+      <tr><td>DELETE</td><td>删除过期或错误记忆。</td><td>静态规则容易把补充事实误删。</td></tr>
+      <tr><td>NOOP</td><td>当前信息不值得改变记忆。</td><td>太保守会漏掉长期有用事实。</td></tr>
+    </tbody></table></div>
+    <div class="note">Manager 的 reward 不是“操作看起来合理”，而是更新后的 memory bank 是否让下游 Answer Agent 答对问题。这是 outcome-driven 的核心。</div>
   </section>
 
-  <section class="section" id="results">
-    <h2>4. 实验结果：RL 超过静态记忆规则</h2>
-    <div class="table-wrap"><table><thead><tr><th>指标</th><th>论文结果</th><th>解读</th></tr></thead><tbody>
-      <tr><td>LoCoMo LLaMA-3.1-8B</td><td>Memory-R1-GRPO Overall F1 / B1 / J = 45.02 / 37.51 / 62.74。</td><td>相对 MemoryOS 和 Memory-SFT 都有提升，说明 outcome-driven RL 不只是模仿强模型轨迹。</td></tr>
-      <tr><td>LoCoMo Qwen-2.5-7B</td><td>Memory-R1-GRPO Overall F1 / B1 / J = 43.14 / 36.44 / 61.51。</td><td>不同 backbone 下仍能保持强结果。</td></tr>
-      <tr><td>泛化</td><td>论文称只在 LoCoMo fine-tune，zero-shot 迁移到 MSC 和 LongMemEval 仍有持续改进。</td><td>记忆操作策略具有跨任务迁移，而不只是 benchmark 专用模板。</td></tr>
+  <section class="section">
+    <h2>4. Answer Agent：检索之后还要蒸馏</h2>
+    <div class="steps">
+      <div class="step"><b>RAG 召回候选</b><p>对每个问题，从 temporal memory bank 中召回一组候选记忆。论文描述 Answer Agent 数据构造时使用 60 条 candidate memories。</p></div>
+      <div class="step"><b>Memory Distillation</b><p>Answer Agent 不直接使用所有候选，而是学习挑出与当前问题真正相关的条目。</p></div>
+      <div class="step"><b>Exact-match reward</b><p>生成答案与 gold answer 的 EM 作为 reward，使“用什么记忆”由最终回答正确性塑造。</p></div>
+      <div class="step"><b>Latency-accuracy tradeoff</b><p>论文比较 Base、Base+Reranker 与 Memory-R1，指出 Answer Agent 在准确率和延迟之间更有优势。</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>5. 实验怎么读：RL 超过静态记忆规则</h2>
+    <div class="table-wrap"><table><thead><tr><th>结果</th><th>论文报告</th><th>含义</th></tr></thead><tbody>
+      <tr><td>LoCoMo / LLaMA</td><td>Memory-R1-GRPO Overall F1 / B1 / J = 45.02 / 37.51 / 62.74。</td><td>相比 RAG、A-Mem、Mem0、MemoryOS、Memory-SFT 等基线，RL 策略带来明显收益。</td></tr>
+      <tr><td>LoCoMo / Qwen</td><td>Memory-R1-GRPO Overall F1 / B1 / J = 43.14 / 36.44 / 61.51。</td><td>不同 backbone 下仍成立，说明不是单一模型偶然结果。</td></tr>
+      <tr><td>训练规模</td><td>摘要称只用 152 question-answer pairs。</td><td>论文强调小量任务反馈即可塑造记忆操作策略，但这不等于任意新领域都只需 152 条。</td></tr>
+      <tr><td>泛化</td><td>论文称在 LoCoMo fine-tune 后 zero-shot 到 MSC 和 LongMemEval 仍有持续改进。</td><td>学到的是操作和蒸馏策略，而不只是 LoCoMo 模板。</td></tr>
     </tbody></table></div>
   </section>
 
-  <section class="section" id="limits">
-    <h2>5. 边界与工程启发</h2>
+  <section class="section">
+    <h2>6. 工程启发与边界</h2>
     <div class="grid two">
-      <div class="card"><h4>适合的场景</h4><p>外部记忆库已经存在，但增删改规则、检索噪声和使用策略不稳定的 agent。</p></div>
-      <div class="card"><h4>需要补的系统层</h4><p>论文强调策略学习；落地仍需要 memory schema、隐私、用户纠错、回滚和审计。</p></div>
+      <div class="mini-card"><h3>适用</h3><p>已有外部 memory bank，但更新规则和检索使用策略不稳定的对话 agent、个人助理或长期任务系统。</p></div>
+      <div class="mini-card"><h3>边界</h3><p>论文没有解决用户可见编辑、回滚、敏感记忆审批、跨设备身份一致性等产品层问题。</p></div>
     </div>
-    <div class="callout warn"><b>谨慎点：</b>Memory-R1 依赖明确的任务反馈来训练。家庭陪伴中的“答得好不好”更主观，需要另行设计 reward 和安全边界。</div>
+    <div class="note warn">Memory-R1 的 reward 主要来自 QA 正确性。陪伴场景里“是否答得好”通常更主观，需要额外的偏好、隐私和安全奖励设计。</div>
   </section>
-
-  <section class="section" id="sources">
-    <h2>6. 来源</h2>
-    <p>论文：<a href="https://arxiv.org/abs/2508.19828">arXiv:2508.19828</a>；代码：<a href="https://github.com/yansikuan/Memory-R1">github.com/yansikuan/Memory-R1</a>。</p>
+  <section class="section">
+    <h2>来源与核验边界</h2>
+    <p class="source-note">本页依据 arXiv:2508.19828 与可访问 GitHub 仓库整理。用户此前提供的 zhiyuanhubj/Memory-R1 链接不可访问，本页继续使用论文关联且可访问的 yansikuan/Memory-R1 仓库。</p>
   </section>
-  <div class="footer">本页面依据 Memory-R1 论文与可访问 GitHub 仓库整理；实验数字取自论文 Table 1 与正文说明。</div>
-</div>
-<script>
-const info={dialogue:['1. Dialogue Turns','长期对话中，新信息可能补充旧信息，也可能与旧信息冲突。静态规则很容易把补充误判为矛盾。'],manager:['2. Memory Manager','Manager 对记忆候选执行 ADD、UPDATE、DELETE、NOOP。它要学会何时合并事实，何时删除过时事实。'],bank:['3. Memory Bank','Memory bank 是外部状态。它本身不聪明，关键在于 Manager 如何维护它。'],answer:['4. Answer Agent','Answer Agent 不盲目吃下全部检索结果，而是先筛选相关记忆，再进行回答。'],rl:['5. RL Signal','Manager 和 Answer Agent 都用 outcome-driven RL 优化，减少逐步人工标注成本。']};
-document.querySelectorAll('.node').forEach(node=>{node.addEventListener('mouseenter',()=>setInfo(node.dataset.key));node.addEventListener('click',()=>setInfo(node.dataset.key));});
-function setInfo(key){document.getElementById('infoTitle').textContent=info[key][0];document.getElementById('infoBody').textContent=info[key][1];document.querySelectorAll('.node').forEach(node=>node.classList.toggle('active',node.dataset.key===key));}
-</script>
+</main>
+<script>window.paperHotspots = {"framework":{"dialogue":{"label":"Figure 2 / Dialogues","title":"多会话对话产生记忆冲突","body":"长期对话中，新事实可能是补充、更新或纠错。静态 prompt 容易把补充误判成矛盾，造成 DELETE+ADD 或碎片化。","points":["论文 Figure 1 用领养两只狗的例子说明 vanilla manager 的误删问题。","Memory Manager 的输入来自当前 turn 和已有 memory bank。"]},"extraction":{"label":"Figure 2 / Info Extraction","title":"先抽取新信息，再检索旧记忆","body":"Stage 1 先从 dialogue turn 中抽取候选信息，再搜索 memory bank 中可能相关的旧条目，为结构化操作提供上下文。","points":["数据构造中使用 temporal memory bank。","Appendix Algorithm 1 描述了训练 tuple 的构建过程。"]},"manager":{"label":"Figure 2 / Memory Manager","title":"四种最小操作：ADD / UPDATE / DELETE / NOOP","body":"Manager 是一个策略模型，输入新信息 x 和旧 memory，输出操作 o 以及新内容 m'。这让记忆管理从规则判断变成可优化策略。","points":["PPO 和 GRPO 都被实验。","奖励来自更新后的 bank 是否帮助下游 QA。"]},"bank":{"label":"Figure 2 / Memory bank","title":"Memory bank 是被 RL 维护的外部状态","body":"memory bank 本身不是智能模块，质量取决于 Manager 如何增删改。好的 bank 需要少污染、少重复、保留最新事实。","points":["UPDATE 比 DELETE+ADD 更能保持事实连续性。","NOOP 让模型学会不把每句话都写入记忆。"]},"retrieve":{"label":"Figure 2 / Retrieve memory","title":"检索只是第一步，不能直接相信","body":"Stage 2 从 bank 检索候选记忆，但检索结果可能有噪声。Memory-R1 不把所有检索条目直接塞给生成器。","points":["论文中 Answer Agent 训练时使用 60 条 candidate memories。","这对应真实 RAG 系统里常见的“召回多、相关少”问题。"]},"answer":{"label":"Figure 2 / Answer Agent","title":"Answer Agent 学会 memory distillation","body":"Answer Agent 在生成前执行 Memory Distillation，筛出真正相关的记忆，再进行回答。它与 Manager 分开训练，解决“用什么记忆”的问题。","points":["Answer Agent 的 reward 直接绑定 exact match。","论文报告相比 reranker-based pipeline 有更好的准确率-延迟权衡。"]}}};</script>
+<script src="../../assets/paper-deep.js"></script>
 </body>
 </html>

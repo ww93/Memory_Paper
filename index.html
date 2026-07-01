@@ -224,7 +224,7 @@
         id: 'memagent',
         title: 'MemAgent',
         subtitle: 'Multi-Conv RL Memory Agent',
-        description: '把超长文档转成流式读取任务，用 overwrite memory 和 Multi-Conv RL 学会在固定窗口中保留答案关键线索，支持百万 token 级外推。',
+        description: '深度拆解论文 Figure 2/4：从 chunk streaming、overwrite memory、latent read/write 分解到 Multi-Conv RL 训练与 3.5M token 外推实验。',
         tags: ['长上下文', '强化学习', '流式记忆', 'RULER'],
         href: './papers/memagent/'
       },
@@ -232,7 +232,7 @@
         id: 'umem',
         title: 'UMem',
         subtitle: 'Unified Memory Extraction and Management',
-        description: '联合优化记忆抽取与管理，通过 Semantic Neighborhood Modeling 和 GRPO 让经验沉淀为可泛化记忆，而不是实例噪声。',
+        description: '深度拆解论文 Figure 1/2：解释 rote memorization trap、Semantic Neighborhood Modeling、Mem-Optimizer、边际效用奖励与 GRPO 演化。',
         tags: ['自演化 Agent', '记忆抽取', 'GRPO', '泛化记忆'],
         href: './papers/umem/'
       },
@@ -240,7 +240,7 @@
         id: 'memory-r1',
         title: 'Memory-R1',
         subtitle: 'RL for Memory Management',
-        description: '用 Memory Manager 和 Answer Agent 分别学习外部记忆的增删改查与检索去噪，解决静态规则带来的记忆污染和噪声利用问题。',
+        description: '深度拆解论文 Figure 2：双阶段 RL 框架，Memory Manager 学 ADD/UPDATE/DELETE/NOOP，Answer Agent 学 memory distillation。',
         tags: ['强化学习', '外部记忆', 'Memory Manager', 'Answer Agent'],
         href: './papers/memory-r1/'
       },
@@ -248,7 +248,7 @@
         id: 'memfactory',
         title: 'MemFactory',
         subtitle: 'Unified Memory-RL Framework',
-        description: '面向记忆增强 Agent 的统一训练与推理框架，把 extraction、update、retrieval、agent、environment 和 trainer 做成可插拔组件。',
+        description: '深度拆解论文 Figure 1：Module、Agent、Environment、Trainer 四层架构，以及 generate/rollout/inference 三类接口。',
         tags: ['框架', 'Memory-RL', 'GRPO', '基础设施'],
         href: './papers/memfactory/'
       },
@@ -256,7 +256,7 @@
         id: 'rmm',
         title: 'RMM',
         subtitle: 'Reflective Memory Management',
-        description: '面向长期个性化对话的反思式记忆管理：用前瞻反思组织多粒度记忆，用回顾反思根据引用证据优化检索。',
+        description: '深度拆解 Algorithm 1 与 Figure 2/3：Prospective Reflection 组织 topic memory，Retrospective Reflection 用 citation reward 更新 reranker。',
         tags: ['个性化对话', '长期记忆', '检索优化', 'LongMemEval'],
         href: './papers/rmm/'
       }

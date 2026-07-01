@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MemAgent 交互式论文解读：Multi-Conv RL Memory Agent</title>
+<title>MemAgent 深度解读：Multi-Conv RL Memory Agent</title>
 <script>
 window.MathJax = {
   tex: { inlineMath: [['\\(', '\\)'], ['$', '$']], displayMath: [['\\[', '\\]']] },
@@ -11,143 +11,106 @@ window.MathJax = {
 };
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
-<style>
-:root {
-  --bg: #f6f8fb; --card: #ffffff; --text: #1f2937; --muted: #667085;
-  --line: #d7dde8; --brand: #2563eb; --brand2: #0f766e; --warn: #b45309; --ok: #15803d;
-  --shadow: 0 12px 30px rgba(31,41,55,.08); --radius: 18px;
-}
-* { box-sizing: border-box; }
-body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif; background:radial-gradient(circle at top left,#e8f1ff 0,transparent 32rem),var(--bg); color:var(--text); line-height:1.72; }
-a { color:var(--brand); text-decoration:none; } a:hover { text-decoration:underline; }
-.wrapper { max-width:1180px; margin:0 auto; padding:28px 18px 80px; }
-.hero { background:linear-gradient(135deg,#111827,#1d4ed8 52%,#0f766e); color:white; border-radius:28px; padding:38px 34px; box-shadow:var(--shadow); overflow:hidden; position:relative; }
-.hero:after { content:""; position:absolute; width:460px; height:460px; border-radius:50%; right:-180px; top:-210px; background:rgba(255,255,255,.12); }
-.hero h1 { margin:0 0 10px; font-size:clamp(2rem,4vw,3.2rem); line-height:1.15; letter-spacing:0; }
-.hero p { max-width:960px; margin:12px 0 0; font-size:1.07rem; opacity:.95; }
-.badges { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
-.badge { display:inline-flex; align-items:center; padding:7px 12px; border:1px solid rgba(255,255,255,.28); border-radius:999px; background:rgba(255,255,255,.12); backdrop-filter:blur(6px); font-size:.92rem; }
-.section { margin-top:28px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px; }
-.section h2 { margin:0 0 12px; font-size:1.65rem; letter-spacing:0; } .section h3 { margin:26px 0 10px; font-size:1.23rem; } .section h4 { margin:18px 0 8px; font-size:1.05rem; }
-.lead { font-size:1.04rem; color:#344054; } .small { color:var(--muted); font-size:.92rem; }
-.callout { border-left:5px solid var(--brand); background:#eff6ff; padding:15px 18px; border-radius:12px; margin:16px 0; }
-.callout.warn { border-left-color:var(--warn); background:#fffbeb; } .callout.ok { border-left-color:var(--ok); background:#f0fdf4; }
-.grid { display:grid; gap:16px; } .grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); } .grid.three { grid-template-columns:repeat(3,minmax(0,1fr)); }
-@media(max-width:860px){ .grid.two,.grid.three{grid-template-columns:1fr;} }
-.card { border:1px solid var(--line); border-radius:16px; padding:16px; background:#fff; } .card h4 { margin-top:0; }
-.kpi { font-size:1.45rem; font-weight:800; color:var(--brand); margin-bottom:4px; }
-.table-wrap { overflow-x:auto; margin-top:14px; border-radius:14px; border:1px solid var(--line); }
-table { border-collapse:collapse; width:100%; background:#fff; min-width:760px; } th,td { border-bottom:1px solid #edf0f5; padding:11px 12px; vertical-align:top; text-align:left; } th { background:#f3f6fb; font-weight:700; color:#111827; } tr:last-child td { border-bottom:none; }
-.figure-grid { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:18px; align-items:start; } @media(max-width:980px){.figure-grid{grid-template-columns:1fr;}}
-.diagram { border:1px solid var(--line); border-radius:18px; background:#f8fafc; padding:18px; display:grid; gap:12px; }
-.flow { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; align-items:stretch; }
-@media(max-width:980px){ .flow{grid-template-columns:1fr;} }
-.node { border:1px solid var(--line); background:#fff; border-radius:14px; padding:13px; min-height:126px; text-align:left; cursor:pointer; color:var(--text); font:inherit; }
-.node:hover,.node.active { border-color:var(--brand); background:#eff6ff; }
-.node b { display:block; color:var(--brand2); margin-bottom:5px; }
-.node span { color:var(--muted); font-size:.92rem; }
-.info-panel { border:1px solid var(--line); border-radius:18px; background:linear-gradient(180deg,#fff,#f8fafc); padding:18px; min-height:330px; position:sticky; top:12px; }
-.info-panel h3 { margin-top:0; color:var(--brand); }
-.pipeline { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0; }
-.step { flex:1 1 180px; border:1px solid var(--line); background:#fff; border-radius:14px; padding:14px; position:relative; }
-.step b { color:var(--brand2); } .step:after { content:"→"; position:absolute; right:-13px; top:40%; color:#94a3b8; font-weight:800; } .step:last-child:after{display:none;} @media(max-width:700px){.step:after{display:none;}}
-.logic-box { border-left:4px solid var(--brand2); background:#f0fdfa; padding:12px 14px; border-radius:12px; margin:12px 0; }
-code,.mono { font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace; }
-.footer { margin-top:28px; color:var(--muted); text-align:center; font-size:.92rem; }
-</style>
+<link rel="stylesheet" href="../../assets/paper-deep.css" />
 </head>
-<body>
-<div class="wrapper">
+<body style="--accent:#2563eb;--accent-2:#0f766e;">
+<main class="page">
+  <div class="topbar">
+    <a class="back-link" href="../../">← 返回论文列表</a>
+    <nav class="source-links"><a href="https://arxiv.org/abs/2507.02259">arXiv</a><a href="https://arxiv.org/pdf/2507.02259">PDF</a><a href="https://memagent-sialab.github.io/">Project</a></nav>
+  </div>
   <section class="hero">
-    <h1>MemAgent 交互式论文解读</h1>
-    <p><b>MemAgent: Reshaping Long-Context LLM with Multi-Conv RL-based Memory Agent</b> 的核心不是继续扩 RoPE 或塞更长上下文，而是把超长文档变成一段一段的流式阅读任务：模型每读完一个 chunk，就用 overwrite 策略更新固定长度 memory，再由 RL 学会保留对最终答案有用的信息。</p>
-    <div class="badges"><span class="badge">Streaming Chunks</span><span class="badge">Overwrite Memory</span><span class="badge">Multi-Conv RL</span><span class="badge">Linear Complexity</span><span class="badge">3.5M QA</span></div>
+    <span class="eyebrow">STREAMING MEMORY AGENT</span>
+    <h1>MemAgent 深度解读</h1>
+    <p class="subtitle">这篇论文的关键设计不是继续扩展一次性上下文窗口，而是把超长输入改写成可训练的流式读写任务：LLM 每次只读一个 chunk，携带上一轮 memory，输出新的固定长度 memory，最后仅用问题和最终 memory 作答。</p>
+    <div class="badge-row"><span class="badge">Chunk streaming</span><span class="badge">Overwrite memory</span><span class="badge">Multi-Conv RL</span><span class="badge">DAPO/GRPO</span><span class="badge">3.5M token QA</span></div>
   </section>
 
-  <section class="section" id="overview">
-    <h2>1. 核心判断</h2>
-    <p class="lead">MemAgent 可以理解为一种<b>把长上下文问题改写成可训练记忆代理问题</b>的方法。它不要求模型一次性看到全书，而是让模型在固定窗口里反复执行“读取新片段、覆盖旧记忆、保留答案线索”的动作。</p>
-    <div class="callout"><b>一句话概括：</b>MemAgent 的记忆不是外部数据库，也不是不断追加的摘要，而是一个在流式处理过程中被反复覆盖的 agent state；RL 的作用是让这个 state 学会抗干扰、压缩和保真。</div>
+  <section class="section">
+    <h2>1. 设计思路：把长上下文问题改写成记忆代理问题</h2>
+    <p class="lead">MemAgent 的出发点是：单纯扩大上下文窗口并不能保证模型在百万 token 级输入上稳定找到证据。论文把“读完整文档”拆成许多局部读写动作，让模型在固定窗口内持续维护一个任务相关 memory。</p>
     <div class="grid three">
-      <div class="card"><div class="kpi">O(N)</div><h4>线性处理</h4><p>每个 chunk 使用固定窗口和固定 memory，整体随 chunk 数线性增长。</p></div>
-      <div class="card"><div class="kpi">&lt; 5%</div><h4>超长外推损失</h4><p>论文摘要报告：从 32K 文本训练外推到 3.5M QA，性能损失低于 5%。</p></div>
-      <div class="card"><div class="kpi">95%+</div><h4>512K RULER</h4><p>论文摘要报告在 512K RULER 测试上达到 95%+。</p></div>
+      <div class="mini-card"><span class="kpi">固定 M</span><h3>memory 不增长</h3><p>旧 memory 被新 memory 覆盖，避免摘要无限追加导致窗口再次爆炸。</p></div>
+      <div class="mini-card"><span class="kpi">O(N)</span><h3>线性成本</h3><p>每个 chunk 的计算近似固定，总成本随 chunk 数线性增长。</p></div>
+      <div class="mini-card"><span class="kpi">RL</span><h3>以最终答案塑造记忆</h3><p>模型不是模仿人工摘要，而是通过 QA reward 学习哪些信息值得保留。</p></div>
     </div>
+    <div class="note">如果把 RAG 看成“外部检索后拼上下文”，MemAgent 更像“模型内部学会边读边写笔记”。它解决的是超长输入处理，不直接解决用户长期画像、权限、遗忘或记忆治理。</div>
   </section>
 
-  <section class="section" id="mechanism">
-    <h2>2. 机制图交互：从长文档到固定记忆</h2>
-    <div class="figure-grid">
-      <div class="diagram">
-        <div class="flow">
-          <button class="node active" data-key="chunk"><b>1. Chunk Stream</b><span>把百万级文档拆成固定窗口可处理的片段。</span></button>
-          <button class="node" data-key="memory"><b>2. Memory State</b><span>每轮读取都携带上一轮压缩后的记忆。</span></button>
-          <button class="node" data-key="overwrite"><b>3. Overwrite</b><span>用新片段和旧记忆生成新的固定长度记忆。</span></button>
-          <button class="node" data-key="rl"><b>4. Multi-Conv RL</b><span>把多个上下文独立 rollout，按最终答案奖励训练。</span></button>
-          <button class="node" data-key="answer"><b>5. Answer</b><span>读完后仅用问题和最终 memory 生成答案。</span></button>
+  <section class="section">
+    <h2>2. 论文原图框架：Figure 2 的五个关键部件</h2>
+    <div class="figure-layout" data-hotspot-root="framework">
+      <div class="figure-shell">
+        <div class="figure-stage">
+          <div class="figure-canvas">
+          <img src="../../assets/frameworks/memagent-figure2.png" alt="MemAgent Figure 2: Solving Long-Context Task with Memory Agent via RL" />
+          <button class="hotspot" style="--x:48%;--y:17%;" data-hotspot="baseline" aria-label="长上下文 LLM">1</button>
+<button class="hotspot" style="--x:13%;--y:68%;" data-hotspot="chunks" aria-label="文本 chunk 流">2</button>
+<button class="hotspot" style="--x:31%;--y:53%;" data-hotspot="memory" aria-label="固定 memory">3</button>
+<button class="hotspot" style="--x:54%;--y:60%;" data-hotspot="recurrent" aria-label="递归读写">4</button>
+<button class="hotspot" style="--x:88%;--y:46%;" data-hotspot="answer" aria-label="最终答案">5</button>
+          </div>
         </div>
-        <div class="logic-box">这套流程的关键约束是“memory 长度不随文档长度增长”。因此它更像一个被 RL 训练出来的流式读者，而不是普通的检索器或长上下文模型。</div>
+        <p class="figure-caption">论文 Figure 2：上半部分是常规长上下文 LLM；下半部分是 MemAgent 分块读取、更新 memory、最终回答的框架。页面保留论文原图，并在关键部件上叠加解释热点。</p>
       </div>
-      <aside class="info-panel">
-        <h3 id="infoTitle">1. Chunk Stream</h3>
-        <p id="infoBody">MemAgent 把长文档按片段输入模型。每次处理的 token 数受固定窗口限制，因此不需要把完整文档放进一次注意力计算。</p>
-        <p class="small">悬停或点击左侧模块查看解释。</p>
+      <aside class="hotspot-panel">
+        <p class="label" data-hot-label></p>
+        <h3 data-hot-title></h3>
+        <p data-hot-body></p>
+        <div data-hot-points></div>
       </aside>
     </div>
   </section>
 
-  <section class="section" id="training">
-    <h2>3. 训练设计：让记忆对最终答案负责</h2>
-    <div class="pipeline">
-      <div class="step"><b>Context-Processing</b><p>模型读 chunk，并根据当前片段更新 memory。</p></div>
-      <div class="step"><b>Answer-Generation</b><p>流结束后，用 problem + memory 输出答案。</p></div>
-      <div class="step"><b>Reward</b><p>奖励来自最终答案，而不是人工标注每次记忆更新。</p></div>
-      <div class="step"><b>DAPO Extension</b><p>论文将 DAPO 扩展为 independent-context multi-conversation generation。</p></div>
+  <section class="section">
+    <h2>3. 生成模型视角：读路径和写路径如何分解</h2>
+    <p class="lead">论文 Figure 4 把 MemAgent 写成一个 latent memory variable 模型。设长文档被切成 \(c^1, ..., c^K\)，每步 memory 为 \(m^k\)。模型在第 k 步先读取 \(c^k\)，再根据 \(c^k\) 与 \(m^{k-1}\) 生成新的 \(m^k\)。</p>
+    <div class="wide-figure">
+      <img src="../../assets/frameworks/memagent-figure4.png" alt="MemAgent Figure 4: architecture and graphical model" />
+      <p class="figure-caption">论文 Figure 4：左侧是 Controller / Read Head / Write Head / Memory 的概念架构，右侧是 chunk 与 latent memory 的图模型。</p>
     </div>
-    <div class="callout ok"><b>为什么 RL 必要：</b>论文消融显示，只有 memory 结构但没有 RL 时，长上下文性能仍会随长度下降；RL 训练后的模型在 7K 到 3.5M 范围内保持更稳定。</div>
+    <div class="formula"><code>p(x_1:N) = sum_{m^{1:K-1}} product_k p(c^k | m^{k-1}) p(m^k | c^k, m^{k-1})</code></div>
+    <div class="split-list">
+      <div class="mini-card"><h3>Read path</h3><p>读路径让当前 chunk 在上一轮 memory 条件下被处理，等价于“带着笔记读下一页”。</p></div>
+      <div class="mini-card"><h3>Write path</h3><p>写路径生成下一轮 memory。这里的关键不是追加，而是覆盖，因此必须学会压缩与取舍。</p></div>
+    </div>
   </section>
 
-  <section class="section" id="results">
-    <h2>4. 实验结果：外推不是只看窗口长度</h2>
-    <div class="table-wrap"><table><thead><tr><th>结论</th><th>论文依据</th><th>解读</th></tr></thead><tbody>
-      <tr><td>3.5M 仍能工作</td><td>Table 2 中 RL-MemAgent-14B 在 3.5M 长度上为 78.12，7B 为 71.09。</td><td>这不是传统 1M 窗口硬塞输入，而是流式处理后保持固定 memory。</td></tr>
-      <tr><td>基线在超长段明显衰减</td><td>Qwen2.5-Instruct-14B-1M 在 896K 为 0.00；QwenLong-L1-32B 在 896K 为 11.72。</td><td>名义窗口长度不等于有效利用长信息的能力。</td></tr>
-      <tr><td>OOD RULER 表现稳定</td><td>论文称 MemAgent-14B 在 8K 到 512K 平均 RULER 任务上超过 95%。</td><td>说明记忆机制不是只过拟合 HotpotQA 格式。</td></tr>
+  <section class="section">
+    <h2>4. Multi-Conv RL：为什么不是普通摘要训练</h2>
+    <div class="steps">
+      <div class="step"><b>Context-Processing</b><p>输入 problem、previous memory、当前 section，输出 updated memory。这个阶段可能重复很多轮。</p></div>
+      <div class="step"><b>Answer-Generation</b><p>读完整个 stream 后，输入 problem 与最终 memory，要求模型输出 boxed answer。</p></div>
+      <div class="step"><b>Independent-context multi-conversation</b><p>论文扩展 DAPO/GRPO，让一个长文档任务对应多个上下文独立的 conversation，而奖励仍由最终答案决定。</p></div>
+      <div class="step"><b>Group-relative advantage</b><p>GRPO 中同一输入采样一组响应，用组内 reward 归一化优势，避免单独训练 value function。</p></div>
+    </div>
+    <div class="note good">这个训练设计把“记忆是否好”推迟到最终答案来判断，因此模型会倾向保留对 QA 有用的证据，而不是生成看起来完整但无关的摘要。</div>
+  </section>
+
+  <section class="section">
+    <h2>5. 实验怎么读：不是窗口越长越强，而是 memory 是否稳定</h2>
+    <div class="table-wrap"><table><thead><tr><th>问题</th><th>论文结果</th><th>设计含义</th></tr></thead><tbody>
+      <tr><td>超长外推</td><td>摘要报告：在 32K 长度训练后外推到 3.5M QA，性能损失小于 5%。</td><td>模型没有在训练中见过 3.5M 上下文；能力来自流式复用同一个读写策略。</td></tr>
+      <tr><td>Table 2</td><td>RL-MemAgent-14B 在 3.5M 长度上为 78.12，RL-MemAgent-7B 为 71.09。</td><td>长输入不是一次性注意力可见，而是被压缩进最终 memory。</td></tr>
+      <tr><td>RULER OOD</td><td>摘要称在 512K RULER 上达到 95%+。</td><td>说明方法不是只对 HotpotQA 格式有效，但仍需看任务类型。</td></tr>
+      <tr><td>消融</td><td>论文 Figure 5 表明，仅加 memory 但没有 RL 时性能仍随长度下降。</td><td>固定 memory 结构只是容器，RL 才让模型学会如何写这个容器。</td></tr>
     </tbody></table></div>
   </section>
 
-  <section class="section" id="limits">
-    <h2>5. 边界与工程启发</h2>
+  <section class="section">
+    <h2>6. 工程启发与边界</h2>
     <div class="grid two">
-      <div class="card"><h4>适合的场景</h4><p>百万 token 级文档 QA、长日志分析、长链路历史压缩，以及需要固定推理窗口但输入无限长的任务。</p></div>
-      <div class="card"><h4>不等于长期人格记忆</h4><p>MemAgent 解决的是长文档读写与 answer-critical memory 保留，不直接提供用户可见、可编辑、可治理的生活化记忆系统。</p></div>
+      <div class="mini-card"><h3>适用</h3><p>长文档 QA、长日志审计、百万 token 研究报告读取、必须在线性成本下处理连续输入的任务。</p></div>
+      <div class="mini-card"><h3>不适用或未覆盖</h3><p>用户长期画像治理、可编辑记忆、敏感信息删除、多主体权限隔离。这些不是 MemAgent 论文的目标。</p></div>
     </div>
-    <div class="callout warn"><b>谨慎点：</b>论文主要验证 QA/RULER 类任务。若用于家庭陪伴记忆，还需要外部身份、权限、遗忘、用户控制和多主体隔离机制。</div>
+    <div class="note warn">最重要的失败模式是 overwrite 的不可逆性：如果早期关键证据没有进入 memory，后面无法再从原文恢复。生产系统需要审计和回放机制来弥补。</div>
   </section>
-
-  <section class="section" id="sources">
-    <h2>6. 来源</h2>
-    <p>论文：<a href="https://arxiv.org/abs/2507.02259">arXiv:2507.02259</a>；项目页：<a href="https://memagent-sialab.github.io/">memagent-sialab.github.io</a>。</p>
+  <section class="section">
+    <h2>来源与核验边界</h2>
+    <p class="source-note">本页依据 arXiv:2507.02259 与项目页整理。实验数值仅引用论文摘要、Figure 1、Figure 5 与 Table 2 中出现的结果；未把“arbitrarily long”扩展为无限可靠推理。</p>
   </section>
-  <div class="footer">本页面依据 MemAgent 论文与项目页整理；实验数字取自论文摘要与 Table 2。</div>
-</div>
-<script>
-const info = {
-  chunk: ['1. Chunk Stream','MemAgent 把长文档按片段输入模型。每次处理的 token 数受固定窗口限制，因此不需要把完整文档放进一次注意力计算。'],
-  memory: ['2. Memory State','memory 是跨 chunk 传递的 agent state。它保存上一轮读到的关键事实，同时作为下一轮更新的输入。'],
-  overwrite: ['3. Overwrite','每读入新 chunk，模型不是追加无限摘要，而是覆盖生成新的 memory。固定长度是线性复杂度成立的前提。'],
-  rl: ['4. Multi-Conv RL','训练时不需要逐步标注“该记什么”。论文用最终答案奖励，让模型学习哪些信息值得保留。'],
-  answer: ['5. Answer','文档流结束后，模型进入 Answer-Generation 模块，用问题和最终 memory 生成答案。']
-};
-document.querySelectorAll('.node').forEach(node => {
-  node.addEventListener('mouseenter', () => setInfo(node.dataset.key));
-  node.addEventListener('click', () => setInfo(node.dataset.key));
-});
-function setInfo(key){
-  document.getElementById('infoTitle').textContent = info[key][0];
-  document.getElementById('infoBody').textContent = info[key][1];
-  document.querySelectorAll('.node').forEach(node => node.classList.toggle('active', node.dataset.key === key));
-}
-</script>
+</main>
+<script>window.paperHotspots = {"framework":{"baseline":{"label":"Figure 2 / baseline","title":"长上下文 LLM 的瓶颈","body":"上半部分表示常规长上下文模型：所有文本 chunk 和问题都进入同一次上下文。即使名义窗口很长，注意力计算和有效利用都会随长度出现成本或性能问题。","points":["论文把这种方式称为 monolithic block 处理。","Figure 1 显示多种长上下文基线在 RULER-HotpotQA 上随长度增长出现性能断崖。"]},"chunks":{"label":"Figure 2 / text chunks","title":"把文档变成流","body":"MemAgent 不要求模型一次看完整文档，而是把文档切成连续 chunk。每轮输入由 problem、previous memory 和当前 section 组成。","points":["训练时论文使用 8K 上下文窗口，其中约 1024 tokens 给 memory，约 5000 tokens 给 document chunk。","推理复杂度随 chunk 数线性增长。"]},"memory":{"label":"Figure 2 / memory tokens","title":"固定长度 memory 是可覆盖状态","body":"每次读完 chunk 后，模型生成一个新的 memory，覆盖旧 memory。memory 是普通 token 序列，论文强调它可读、可检查，而不是外部向量或隐藏态。","points":["memory 长度不随文档长度增长。","覆盖机制让系统可以处理百万级输入，但也带来丢失早期证据的风险。"]},"recurrent":{"label":"Figure 2 / recurrent reader","title":"LLM 被重塑为 recurrent reader","body":"下半部分的多个 LLM 方块不是多个模型，而是同一个模型在多个 chunk 上反复执行读写。它像一个会做笔记的读者，而不是一次性全文阅读器。","points":["Context-Processing 阶段只负责更新 memory。","Answer-Generation 阶段才根据最终 memory 输出答案。"]},"answer":{"label":"Figure 2 / answer","title":"最终答案只依赖最终 memory","body":"文档流结束后，模型不再回看所有 chunk，而是用 problem 和最终 memory 作答。因此 RL 必须让 memory 学会保留 answer-critical facts。","points":["最终奖励来自答案是否正确。","没有逐步标注每轮 memory 应该写什么。"]}}};</script>
+<script src="../../assets/paper-deep.js"></script>
 </body>
 </html>
